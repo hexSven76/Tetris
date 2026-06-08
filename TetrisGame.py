@@ -1,6 +1,6 @@
-
 import time
 import os
+import msvcrt
 
 COLS = 10
 ROWS = 20
@@ -155,6 +155,20 @@ def rotate_piece(piece):   # unfinished
     return rotated 
 
 
+def get_input(board, piece):
+
+    if msvcrt.kbhit():
+
+        key = msvcrt.getch().decode().lower()
+
+        if key == "a":
+            if can_move(board, piece, 'left'):
+                piece["col"] -= 1
+        elif key == "d":
+            if can_move(board, piece, 'right'):
+                piece["col"] += 1
+
+
 def gameloop():
 
     tetris = Game()
@@ -166,9 +180,11 @@ def gameloop():
         # drawing current state
         clear_screen()
         draw(tetris.board, tetris.current_piece)
-        # support player moving the piece and re-drawing board before next frame (later)
 
-        # ----- prepration for drawing next state -----
+        # moving the piece left/right
+        get_input(tetris.board, tetris.current_piece)
+
+        # ---------------- prepration for drawing next state ----------------
         if can_move(tetris.board, tetris.current_piece, "down"):
             tetris.current_piece["row"] += 1
         else:
@@ -181,7 +197,7 @@ def gameloop():
             else:
                 # game over if new piece immediately collides with older pieces
                 game_over = True
-        # ---------------------------------------------
+        # -------------------------------------------------------------------
 
         time.sleep(0.15)
 
@@ -195,6 +211,13 @@ if __name__ == "__main__":
 
 
 """
+TO DO:
 make some functions use self for cleaner calls
+
+UNFINISHED FUNCTIONS:
+spawn_piece
+can_spawn
+rotate_piece
+clear_lines
 
 """
