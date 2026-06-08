@@ -106,24 +106,37 @@ def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
 
-def can_move(board, piece, direction):  # unfinished
-    pass
-
-
-def can_move_down(board, piece):
-
+def can_move(board, piece, direction):
+    
     for row, col in get_occupied_cells(piece):
-        target_row = row + 1
-        target_col = col
+
+        offset = get_offsets(direction)
+        target_row = row + offset[0]
+        target_col = col + offset[1]
 
         # bottom surface
         if target_row >= ROWS:
             return False
+        # right surface
+        if target_col >= COLS:
+            return False
+        # left surface
+        if target_col < 0:
+            return False
         # existing blocks
         if board[target_row][target_col] != 0:
             return False
-        
+  
     return True
+
+
+def get_offsets(direction):
+    if direction is "down":
+        return 1, 0
+    if direction is "right":
+        return 0, 1
+    if direction is "left":
+        return 0, -1
 
 
 def place_piece(board, piece):
@@ -156,17 +169,17 @@ def gameloop():
         # support player moving the piece and re-drawing board before next frame (later)
 
         # ----- prepration for drawing next state -----
-        if can_move_down(tetris.board, tetris.current_piece):
+        if can_move(tetris.board, tetris.current_piece, "down"):
             tetris.current_piece["row"] += 1
         else:
-            # permenantly place the piece in tetris.baord
+            # permenantly place the piece in tetris.baord, then spawn new piece
             place_piece(tetris.board, tetris.current_piece)
-            # spawn new piece
             new_piece = spawn_piece(tetris.board)
-            # game over if new piece immediately collides with older pieces
+
             if can_spawn(tetris.board, new_piece):
                 tetris.current_piece = new_piece
             else:
+                # game over if new piece immediately collides with older pieces
                 game_over = True
         # ---------------------------------------------
 
@@ -183,4 +196,5 @@ if __name__ == "__main__":
 
 """
 make some functions use self for cleaner calls
+
 """
