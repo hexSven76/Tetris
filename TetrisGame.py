@@ -89,6 +89,7 @@ def get_occupied_cells(piece):
 
 def draw(board, piece):
 
+    clear_screen()
     temp_board = [row[:] for row in board]
 
     # getting occupied cells and marking them on temp_board
@@ -131,11 +132,11 @@ def can_move(board, piece, direction):
 
 
 def get_offsets(direction):
-    if direction is "down":
+    if direction == "down":
         return 1, 0
-    if direction is "right":
+    if direction == "right":
         return 0, 1
-    if direction is "left":
+    if direction == "left":
         return 0, -1
 
 
@@ -157,16 +158,18 @@ def rotate_piece(piece):   # unfinished
 
 def get_input(board, piece):
 
-    if msvcrt.kbhit():
+    while msvcrt.kbhit():
 
         key = msvcrt.getch().decode().lower()
 
         if key == "a":
             if can_move(board, piece, 'left'):
                 piece["col"] -= 1
+                draw(board, piece)
         elif key == "d":
             if can_move(board, piece, 'right'):
                 piece["col"] += 1
+                draw(board, piece)
 
 
 def gameloop():
@@ -175,31 +178,39 @@ def gameloop():
     tetris.current_piece = spawn_piece(tetris.board)
     game_over = False
 
+    fall_interval = 0.3      
+    last_fall_time = time.time()    
+
     while not game_over:
 
         # drawing current state
-        clear_screen()
         draw(tetris.board, tetris.current_piece)
 
-        # moving the piece left/right
+        # keyboard input
         get_input(tetris.board, tetris.current_piece)
 
-        # ---------------- prepration for drawing next state ----------------
-        if can_move(tetris.board, tetris.current_piece, "down"):
-            tetris.current_piece["row"] += 1
-        else:
-            # permenantly place the piece in tetris.baord, then spawn new piece
-            place_piece(tetris.board, tetris.current_piece)
-            new_piece = spawn_piece(tetris.board)
+        #  skipping gravity, if fall_interval is not completed yet (for updating left/right movement)
+        current_time = time.time()
+        if current_time - last_fall_time >= fall_interval:
 
-            if can_spawn(tetris.board, new_piece):
-                tetris.current_piece = new_piece
+            # -------------------- gravity --------------------
+            if can_move(tetris.board, tetris.current_piece, "down"):
+                tetris.current_piece["row"] += 1
             else:
-                # game over if new piece immediately collides with older pieces
-                game_over = True
-        # -------------------------------------------------------------------
+                # permenantly placing the piece on bottom
+                place_piece(tetris.board, tetris.current_piece)
+                new_piece = spawn_piece(tetris.board)
 
-        time.sleep(0.15)
+                if can_spawn(tetris.board, new_piece):
+                    tetris.current_piece = new_piece
+                else:
+                    # game over if new piece immediately collides with older pieces
+                    game_over = True
+            # -------------------------------------------------
+
+            last_fall_time = current_time
+
+        time.sleep(0.01)
 
     print(f"GAME OVER ! SCORE: {tetris.score}")
 
