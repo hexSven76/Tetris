@@ -89,22 +89,23 @@ def get_occupied_cells(piece):
 
 def draw(board, piece):
 
-    clear_screen()
+    print("\033[H", end="") # cleart terminal
     temp_board = [row[:] for row in board]
 
     # getting occupied cells and marking them on temp_board
     for row, col in get_occupied_cells(piece):
         temp_board[row][col] = 1
 
-    # printing temp_board with occupied cells filled
+    # printing temp_board with occupied cells filled  (□ or · for empty cells?!)
     for row in temp_board:
         for cell in row:
-            print("■" if cell!=0 else ".", end="")
+            print("■" if cell!=0 else "□", end="")
         print()
 
 
-def clear_screen():
-    os.system("cls" if os.name == "nt" else "clear")
+def initialize_screen():
+    print("\033[2J", end="")   # clear terminal
+    print("\033[?25l", end="") # hide cursor
 
 
 def can_move(board, piece, direction):
@@ -159,17 +160,28 @@ def rotate_piece(piece):   # unfinished
 def get_input(board, piece):
 
     while msvcrt.kbhit():
+        key = msvcrt.getch()
+        if key == b'\xe0':
 
-        key = msvcrt.getch().decode().lower()
+            key = msvcrt.getch()
 
-        if key == "a":
-            if can_move(board, piece, 'left'):
-                piece["col"] -= 1
-                draw(board, piece)
-        elif key == "d":
-            if can_move(board, piece, 'right'):
-                piece["col"] += 1
-                draw(board, piece)
+            if key == b'K':
+                if can_move(board, piece, 'left'):
+                    piece["col"] -= 1
+                    draw(board, piece)
+
+            elif key == b'M':
+                if can_move(board, piece, 'right'):
+                    piece["col"] += 1
+                    draw(board, piece)
+
+            elif key == b'P':
+                # soft drop
+                pass
+
+            elif key == b'H':
+                # rotate
+                pass
 
 
 def gameloop():
@@ -177,6 +189,7 @@ def gameloop():
     tetris = Game()
     tetris.current_piece = spawn_piece(tetris.board)
     game_over = False
+    initialize_screen()
 
     fall_interval = 0.3      
     last_fall_time = time.time()    
@@ -212,7 +225,7 @@ def gameloop():
 
         time.sleep(0.01)
 
-    print(f"GAME OVER ! SCORE: {tetris.score}")
+    print(f"GAME OVER ! SCORE: {tetris.score} \n")
 
 
 if __name__ == "__main__":
@@ -224,6 +237,10 @@ if __name__ == "__main__":
 """
 TO DO:
 make some functions use self for cleaner calls
+Score
+Soft drop (S key speeds up falling)
+Hard drop (space bar instantly drops)
+Random piece generation
 
 UNFINISHED FUNCTIONS:
 spawn_piece
