@@ -101,6 +101,7 @@ def draw(board, piece):
         for cell in row:
             print("■" if cell!=0 else "□", end="")
         print()
+    # print(f"\n score: {score}")
 
 
 def initialize_screen():
@@ -145,10 +146,25 @@ def place_piece(board, piece):
     # getting occupied cells & permenantly marking it on main board
     for row, col in get_occupied_cells(piece):
         board[row][col] = 1
+    
+    # checking for lines to clear
+    clear_lines(board)
 
 
-def clear_lines(board):    # unfinished
-    pass
+def clear_lines(board):  # unfinished
+
+    lines_cleared = 0
+    row = ROWS - 1
+    
+    while row >= 0:
+        if all(cell == 1 for cell in board[row]):
+            del board[row]
+            board.insert(0, [0 for _ in range(COLS)])
+            lines_cleared += 1
+        else:
+            row -= 1
+
+    # score += lines_cleared * 100  # used later with self
 
 
 def rotate_piece(piece):   # unfinished
@@ -191,7 +207,7 @@ def gameloop():
     game_over = False
     initialize_screen()
 
-    fall_interval = 0.3      
+    fall_interval = 0.2     
     last_fall_time = time.time()    
 
     while not game_over:
@@ -240,12 +256,11 @@ make some functions use self for cleaner calls
 Score
 Soft drop (S key speeds up falling)
 Hard drop (space bar instantly drops)
-Random piece generation
+slow animation for clearing lines ?!
 
 UNFINISHED FUNCTIONS:
 spawn_piece
 can_spawn
 rotate_piece
-clear_lines
 
 """
