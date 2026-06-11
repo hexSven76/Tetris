@@ -1,5 +1,6 @@
 import time
 import msvcrt
+from piece import Piece, PIECES_DATA
 
 COLS = 10
 ROWS = 20
@@ -25,7 +26,7 @@ class Game:
         temp_board = [row[:] for row in self.board]
 
         # getting occupied cells and marking them on temp_board
-        for row, col in self.get_occupied_cells():
+        for row, col in self.current_piece.get_occupied_cells():
             temp_board[row][col] = 1
 
         # printing temp_board with occupied cells filled  (□ or · for empty cells?!)
@@ -47,12 +48,12 @@ class Game:
 
                 if key == b'K':
                     if self.can_move('left'):
-                        self.current_piece["col"] -= 1
+                        self.current_piece.col -= 1
                         self.draw()
 
                 elif key == b'M':
                     if self.can_move('right'):
-                        self.current_piece["col"] += 1
+                        self.current_piece.col += 1
                         self.draw()
 
                 elif key == b'P':
@@ -66,7 +67,15 @@ class Game:
         
     def can_move(self, direction):
     
-        for row, col in self.get_occupied_cells():
+        def get_offsets(direction):
+            if direction == "down":
+                return 1, 0
+            if direction == "right":
+                return 0, 1
+            if direction == "left":
+                return 0, -1
+            
+        for row, col in self.current_piece.get_occupied_cells():
 
             offset = get_offsets(direction)
             target_row = row + offset[0]
@@ -90,7 +99,7 @@ class Game:
 
     def place_piece(self):
         # getting occupied cells & permenantly marking it on main board
-        for row, col in self.get_occupied_cells():
+        for row, col in self.current_piece.get_occupied_cells():
             self.board[row][col] = 1
         
         # checking for lines to clear
@@ -114,44 +123,22 @@ class Game:
 
 
     def spawn_piece(self):  #unfinished
-        # random piece selection (later)
         # random initial rotation (later)
-
-        new_piece = {
-            "shape": T,
-            "row": 0,
-            "col": 4
-        }
-
+        import random
+        piece_data = random.choice(list(PIECES_DATA.values()))
+        new_piece = Piece(piece_data, 0, 4) 
         return new_piece
     
 
     def can_spawn(self): # unfinished
         # checking whether any occupied cell of spawning-piece is empty in board
         return True #temp
-
-
-    def get_occupied_cells(self):
-
-        shape = self.current_piece["shape"]  # piece matrix (relative cordinates)
-        cells = []
-
-        # iteration on piece to find occupied cells (1's)
-        for r in range(len(shape)):
-            for c in range(len(shape[r])):
-                if shape[r][c] == 1:
-                    # getting board-relative cords
-                    board_row = self.current_piece["row"] + r
-                    board_col = self.current_piece["col"] + c
-                    cells.append((board_row, board_col))
-        
-        return cells
-
+    
 
     def gravity(self):
 
         if self.can_move("down"):
-            self.current_piece["row"] += 1
+            self.current_piece.row += 1
         else:
             # permenantly placing the piece on bottom
             self.place_piece()
@@ -162,64 +149,6 @@ class Game:
             else:
                 # game over if new piece immediately collides with older pieces
                 self.game_over = True
-
-
-I = [
-    [1],
-    [1],
-    [1],
-    [1]
-]
-
-O = [
-    [1, 1],
-    [1, 1]
-]
-
-T = [
-    [1, 1, 1],
-    [0, 1, 0]
-]
-
-S = [
-    [0, 1, 1],
-    [1, 1, 0]
-]
-
-Z = [
-    [1, 1, 0],
-    [0, 1, 1]
-]
-
-J = [
-    [0, 1],
-    [0, 1],
-    [1, 1]
-]
-
-L = [
-    [1, 0],
-    [1, 0],
-    [1, 1]
-]
-
-PIECES = [I, O, T, S, Z, J, L]
-
-
-def get_offsets(direction):
-    if direction == "down":
-        return 1, 0
-    if direction == "right":
-        return 0, 1
-    if direction == "left":
-        return 0, -1
-
-
-def rotate_piece(piece):   # unfinished
-    shape = piece["shape"]
-    rotated = list(zip(*shape[::-1]))  
-    if 'rotated shape has no collision':
-        return rotated 
 
 
 def gameloop():
@@ -264,5 +193,15 @@ UNFINISHED FUNCTIONS:
 spawn_piece
 can_spawn
 rotate_piece
+
+elif key == b'H':  # up-arrow for rotation
+    rotated = {
+        "shape": rotate_matrix(self.current_piece["shape"]),
+        "row": self.current_piece["row"],
+        "col": self.current_piece["col"]
+    }
+    if self.can_move(rotated, 0, 0):
+        self.current_piece["shape"] = rotated["shape"]
+        moved = True
 
 """
