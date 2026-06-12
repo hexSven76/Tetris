@@ -24,9 +24,9 @@ class Piece:
                     cells.append((board_row, board_col))
 
         return cells
-    
 
-    def rotate(self):   # unfinished
+    
+    def rotate(self):  # clockwise
         self.shape = [list(row) for row in zip(*self.shape[::-1])]
 
 

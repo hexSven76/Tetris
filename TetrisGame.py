@@ -56,15 +56,22 @@ class Game:
                         self.current_piece.col += 1
                         self.draw()
 
+                elif key == b'H': 
+                    old_shape = self.current_piece.shape
+                    self.current_piece.rotate()
+                    if not self.can_move('rotated'):
+                        self.current_piece.shape = old_shape
+                    self.draw()
+
                 elif key == b'P':
                     # soft drop
                     pass
 
-                elif key == b'H':
-                    # rotate
+                elif key == b'????????':  # spacebar
+                    # hard drop
                     pass
-
         
+
     def can_move(self, direction):
     
         def get_offsets(direction):
@@ -74,6 +81,8 @@ class Game:
                 return 0, 1
             if direction == "left":
                 return 0, -1
+            if direction == "rotated":
+                return 0, 0
             
         for row, col in self.current_piece.get_occupied_cells():
 
@@ -188,20 +197,11 @@ TO DO:
 get_input() Soft drop (S key speeds up falling)
 get_input() Hard drop (space bar instantly drops)
 slow animation for clearing lines ?!
+colored pieces
+Z and X for clock/counter-clock rotation
 
 UNFINISHED FUNCTIONS:
 spawn_piece
 can_spawn
-rotate_piece
-
-elif key == b'H':  # up-arrow for rotation
-    rotated = {
-        "shape": rotate_matrix(self.current_piece["shape"]),
-        "row": self.current_piece["row"],
-        "col": self.current_piece["col"]
-    }
-    if self.can_move(rotated, 0, 0):
-        self.current_piece["shape"] = rotated["shape"]
-        moved = True
 
 """
