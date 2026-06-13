@@ -194,14 +194,13 @@ if __name__ == "__main__":
 
 """
 TO DO:
-get_input() Soft drop (S key speeds up falling)
-get_input() Hard drop (space bar instantly drops)
+spawn_piece()
+can_spawn()
+get_input() Soft drop
+get_input() Hard drop
 slow animation for clearing lines ?!
-colored pieces
 Z and X for clock/counter-clock rotation
-
-UNFINISHED FUNCTIONS:
-spawn_piece
-can_spawn
+colored pieces
+S and Z piece are still freaky in rotation
 
 """
