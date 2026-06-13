@@ -131,11 +131,13 @@ class Game:
         self.score += lines_cleared * 100
 
 
-    def spawn_piece(self):  #unfinished
-        # random initial rotation (later)
+    def spawn_piece(self):
         import random
         piece_data = random.choice(list(PIECES_DATA.values()))
-        new_piece = Piece(piece_data, 0, 4) 
+        new_piece = Piece(piece_data, 0, 4)
+        random_initial_rotation = random.randint(0,3)
+        for i in range(random_initial_rotation):
+            new_piece.rotate()
         return new_piece
     
 
@@ -194,7 +196,6 @@ if __name__ == "__main__":
 
 """
 TO DO:
-spawn_piece()
 can_spawn()
 get_input() Soft drop
 get_input() Hard drop
