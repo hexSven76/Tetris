@@ -163,12 +163,10 @@ class Game:
             # permenantly placing the piece on bottom
             self.place_piece()
 
-            new_piece = self.spawn_piece()
-            if self.can_spawn(new_piece):
-                self.current_piece = new_piece
-            else:
-                # game over if new piece immediately collides with older pieces
+            self.current_piece = self.spawn_piece()
+            if not self.can_spawn(self.current_piece):
                 self.game_over = True
+                
 
 
 def gameloop():
@@ -194,6 +192,8 @@ def gameloop():
 
         time.sleep(0.01)
 
+    # show final spawning collision and GAMEOVER
+    tetris.draw()
     print(f"GAME OVER ! SCORE: {tetris.score} \n")
 
 
@@ -208,8 +208,9 @@ TO DO:
 get_input() Soft drop
 get_input() Hard drop
 slow animation for clearing lines ?!
-Z and X for clock/counter-clock rotation
 colored pieces
-S and Z piece are still freaky in rotation
+Z and X for clock/counter-clock rotation
+S and Z pieces are still freaky in rotation
+pieces always spawn 1-2 line lower than ceiling (bcz of zeros in their shape matrices)
 
 """
