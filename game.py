@@ -59,7 +59,7 @@ class Game:
                 elif key == b'H': 
                     old_shape = self.current_piece.shape
                     self.current_piece.rotate()
-                    if not self.can_move('rotated'):
+                    if not self.can_move('neutral'):
                         self.current_piece.shape = old_shape
                     self.draw()
 
@@ -81,7 +81,7 @@ class Game:
                 return 0, 1
             if direction == "left":
                 return 0, -1
-            if direction == "rotated":
+            if direction == "neutral":
                 return 0, 0
             
         for row, col in self.current_piece.get_occupied_cells():
@@ -141,9 +141,18 @@ class Game:
         return new_piece
     
 
-    def can_spawn(self): # unfinished
+    def can_spawn(self, piece):
+
         # checking whether any occupied cell of spawning-piece is empty in board
-        return True #temp
+        for row, col in piece.get_occupied_cells():
+            # checking for bad pieces
+            assert 0 <= row < ROWS
+            assert 0 <= col < COLS
+            # collides with existing block
+            if self.board[row][col] != 0:
+                return False
+
+        return True
     
 
     def gravity(self):
@@ -153,9 +162,9 @@ class Game:
         else:
             # permenantly placing the piece on bottom
             self.place_piece()
-            new_piece = self.spawn_piece()
 
-            if self.can_spawn():
+            new_piece = self.spawn_piece()
+            if self.can_spawn(new_piece):
                 self.current_piece = new_piece
             else:
                 # game over if new piece immediately collides with older pieces
@@ -196,7 +205,6 @@ if __name__ == "__main__":
 
 """
 TO DO:
-can_spawn()
 get_input() Soft drop
 get_input() Hard drop
 slow animation for clearing lines ?!
