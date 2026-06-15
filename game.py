@@ -64,8 +64,8 @@ class Game:
                     self.draw()
 
                 elif key == b'P':
-                    # soft drop
-                    pass
+                    if self.can_move("down"):
+                        self.current_piece.row += 1
 
                 elif key == b'????????':  # spacebar
                     # hard drop
@@ -205,8 +205,8 @@ if __name__ == "__main__":
 
 """
 TO DO:
-get_input() Soft drop
 get_input() Hard drop
+see next spawning piece
 slow animation for clearing lines ?!
 colored pieces
 Z and X for clock/counter-clock rotation
