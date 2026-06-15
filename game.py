@@ -42,7 +42,10 @@ class Game:
 
         while msvcrt.kbhit():
             key = msvcrt.getch()
-            if key == b'\xe0':
+            if key == b' ':
+                self.hard_drop()
+
+            elif key == b'\xe0':
 
                 key = msvcrt.getch()
 
@@ -66,10 +69,6 @@ class Game:
                 elif key == b'P':
                     if self.can_move("down"):
                         self.current_piece.row += 1
-
-                elif key == b'????????':  # spacebar
-                    # hard drop
-                    pass
         
 
     def can_move(self, direction):
@@ -160,12 +159,20 @@ class Game:
         if self.can_move("down"):
             self.current_piece.row += 1
         else:
-            # permenantly placing the piece on bottom
-            self.place_piece()
+            self.lock_and_spawn()
 
-            self.current_piece = self.spawn_piece()
-            if not self.can_spawn(self.current_piece):
-                self.game_over = True
+
+    def hard_drop(self):
+        while self.can_move("down"):
+            self.current_piece.row += 1
+        self.lock_and_spawn()
+
+
+    def lock_and_spawn(self):
+        self.place_piece()
+        self.current_piece = self.spawn_piece()
+        if not self.can_spawn(self.current_piece):
+            self.game_over = True
                 
 
 
@@ -205,7 +212,6 @@ if __name__ == "__main__":
 
 """
 TO DO:
-get_input() Hard drop
 see next spawning piece
 slow animation for clearing lines ?!
 colored pieces
