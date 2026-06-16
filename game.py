@@ -1,6 +1,6 @@
 import time
 import msvcrt
-from piece import Piece, PIECES_DATA
+from piece import Piece, PIECES_DATA, COLORS
 
 COLS = 10
 ROWS = 20
@@ -27,12 +27,15 @@ class Game:
 
         # getting occupied cells and marking them on temp_board
         for row, col in self.current_piece.get_occupied_cells():
-            temp_board[row][col] = 1
+            temp_board[row][col] = self.current_piece.color
 
-        # printing temp_board with occupied cells filled  (□ or · for empty cells?!)
+        # printing temp_board with occupied cells filled
         for row in temp_board:
             for cell in row:
-                print("■" if cell!=0 else "□", end="")
+                if cell == 0:
+                    print("□", end="")
+                else:
+                    print(COLORS[cell] + "■" + COLORS[0], end="")
             print()
 
         print(f"\n score: {self.score}")
@@ -108,7 +111,7 @@ class Game:
     def place_piece(self):
         # getting occupied cells & permenantly marking it on main board
         for row, col in self.current_piece.get_occupied_cells():
-            self.board[row][col] = 1
+            self.board[row][col] = self.current_piece.color
         
         # checking for lines to clear
         self.clear_lines()
@@ -120,7 +123,7 @@ class Game:
         row = ROWS - 1
         
         while row >= 0:
-            if all(cell == 1 for cell in self.board[row]):
+            if all(cell != 0 for cell in self.board[row]):
                 del self.board[row]
                 self.board.insert(0, [0 for _ in range(COLS)])
                 lines_cleared += 1
@@ -212,11 +215,11 @@ if __name__ == "__main__":
 
 """
 TO DO:
+in terminal, space between rows is more than space between cols. looks uneven
+pieces always spawn 1-2 line lower than ceiling (bcz of zeros in their shape matrices)
 see next spawning piece
 slow animation for clearing lines ?!
-colored pieces
 Z and X for clock/counter-clock rotation
 S and Z pieces are still freaky in rotation
-pieces always spawn 1-2 line lower than ceiling (bcz of zeros in their shape matrices)
 
 """
