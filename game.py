@@ -30,14 +30,24 @@ class Game:
             temp_board[row][col] = self.current_piece.color
 
         # printing temp_board with occupied cells filled
+        RESET = "\033[0m"
         for row in temp_board:
+
+            printing_line = ""
+
             for cell in row:
                 if cell == 0:
-                    print("□", end="")
+                    printing_line += "  "
                 else:
-                    print(COLORS[cell] + "■" + COLORS[0], end="")
-            print()
+                    printing_line += COLORS[cell] + "██" + RESET
 
+            # side borders
+            print("│" + printing_line + "│")
+
+       # lower border  
+        print("└" + "─" * (COLS * 2) + "┘")
+
+        print()
         print(f"\n score: {self.score}")
     
 
@@ -204,7 +214,7 @@ def gameloop():
 
     # show final spawning collision and GAMEOVER
     tetris.draw()
-    print(f"GAME OVER ! SCORE: {tetris.score} \n")
+    print("GAME OVER!")
 
 
 if __name__ == "__main__":
@@ -215,7 +225,6 @@ if __name__ == "__main__":
 
 """
 TO DO:
-in terminal, space between rows is more than space between cols. looks uneven
 pieces always spawn 1-2 line lower than ceiling (bcz of zeros in their shape matrices)
 see next spawning piece
 slow animation for clearing lines ?!

@@ -33,7 +33,6 @@ class Piece:
 
 # ANSI terminal colors
 COLORS = {
-    0: "\033[0m",   # reset
     1: "\033[36m",  # cyan
     2: "\033[33m",  # yellow
     3: "\033[35m",  # pink
