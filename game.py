@@ -1,4 +1,5 @@
 import time
+import random
 import msvcrt
 from piece import Piece, PIECES_DATA, COLORS
 
@@ -144,12 +145,19 @@ class Game:
 
 
     def spawn_piece(self):
-        import random
+
+        # selecting a random piece and creating it
         piece_data = random.choice(list(PIECES_DATA.values()))
         new_piece = Piece(piece_data, 0, 4)
+
+        # selecting a random number of rotations
         random_initial_rotation = random.randint(0,3)
         for i in range(random_initial_rotation):
             new_piece.rotate()
+
+        # removing top paddings (zeros in shape matrice)
+        new_piece.row = -new_piece.get_top_padding()
+
         return new_piece
     
 
@@ -225,8 +233,8 @@ if __name__ == "__main__":
 
 """
 TO DO:
-pieces always spawn 1-2 line lower than ceiling (bcz of zeros in their shape matrices)
 see next spawning piece
+shadow
 slow animation for clearing lines ?!
 Z and X for clock/counter-clock rotation
 S and Z pieces are still freaky in rotation

@@ -29,6 +29,11 @@ class Piece:
     def rotate(self):  # clockwise
         self.shape = [list(row) for row in zip(*self.shape[::-1])]
 
+    def get_top_padding(self):
+        for r, row in enumerate(self.shape):
+            if any(cell == 1 for cell in row):
+                return r
+        return 0
 
 
 # ANSI terminal colors
