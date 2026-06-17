@@ -26,8 +26,12 @@ class Piece:
         return cells
 
     
-    def rotate(self):  # clockwise
-        self.shape = [list(row) for row in zip(*self.shape[::-1])]
+    def rotate(self, direction):
+        if direction == "cw":
+            self.shape = [list(row) for row in zip(*self.shape[::-1])]
+        elif direction == "ccw":
+            self.shape = [list(row)for row in zip(*self.shape)][::-1]
+
 
     def get_top_padding(self):
         for r, row in enumerate(self.shape):

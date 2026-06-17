@@ -55,11 +55,27 @@ class Game:
     def get_input(self):
 
         while msvcrt.kbhit():
-            key = msvcrt.getch()
+            
+            key = msvcrt.getch().lower()
+
             if key == b' ':
                 self.hard_drop()
 
-            elif key == b'\xe0':
+            if key == b'z':
+                old_shape = self.current_piece.shape
+                self.current_piece.rotate("ccw")
+                if not self.can_move("neutral"):
+                    self.current_piece.shape = old_shape
+                self.draw()
+
+            elif key == b'x':
+                old_shape = self.current_piece.shape
+                self.current_piece.rotate("cw")
+                if not self.can_move("neutral"):
+                    self.current_piece.shape = old_shape
+                self.draw()
+
+            elif key == b'\xe0':  # arrow keys
 
                 key = msvcrt.getch()
 
@@ -72,13 +88,6 @@ class Game:
                     if self.can_move('right'):
                         self.current_piece.col += 1
                         self.draw()
-
-                elif key == b'H': 
-                    old_shape = self.current_piece.shape
-                    self.current_piece.rotate()
-                    if not self.can_move('neutral'):
-                        self.current_piece.shape = old_shape
-                    self.draw()
 
                 elif key == b'P':
                     if self.can_move("down"):
@@ -153,7 +162,7 @@ class Game:
         # selecting a random number of rotations
         random_initial_rotation = random.randint(0,3)
         for i in range(random_initial_rotation):
-            new_piece.rotate()
+            new_piece.rotate('cw')
 
         # removing top paddings (zeros in shape matrice)
         new_piece.row = -new_piece.get_top_padding()
@@ -236,7 +245,9 @@ TO DO:
 see next spawning piece
 shadow
 slow animation for clearing lines ?!
-Z and X for clock/counter-clock rotation
 S and Z pieces are still freaky in rotation
+gui?
+exe?
+port app?
 
 """
