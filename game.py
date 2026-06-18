@@ -12,6 +12,7 @@ class Game:
     def __init__(self):
         self.board = [[0 for _ in range(COLS)] for _ in range(ROWS)]
         self.current_piece = self.spawn_piece()
+        self.next_piece = self.spawn_piece()    
         self.score = 0
         self.game_over = False
 
@@ -23,7 +24,8 @@ class Game:
 
     def draw(self):
 
-        print("\033[H", end="") # cleart terminal
+        # print("\033[H", end="") # cleart terminal (this fixed flicker, but next_piece preview sometimes shows next 2 pieces)
+        print("\033[H\033[J", end="")
         temp_board = [row[:] for row in self.board]
 
         # getting occupied cells and marking them on temp_board
@@ -45,11 +47,23 @@ class Game:
             # side borders
             print("│" + printing_line + "│")
 
-       # lower border  
-        print("└" + "─" * (COLS * 2) + "┘")
+        # lower border  
+        print("└" + "─" * (COLS * 2) + "┘ \n")
 
-        print()
-        print(f"\n score: {self.score}")
+        # next piece
+        for row in self.next_piece.shape:
+
+            printing_line = ""
+
+            for cell in row:
+                if cell == 0:
+                    printing_line += "  "
+                else:
+                    printing_line += COLORS[self.next_piece.color] + "██" + RESET
+                    
+            print(printing_line)
+
+        print(f"\nscore: {self.score}")
     
 
     def get_input(self):
@@ -66,14 +80,12 @@ class Game:
                 self.current_piece.rotate("ccw")
                 if not self.can_move("neutral"):
                     self.current_piece.shape = old_shape
-                self.draw()
 
             elif key == b'x':
                 old_shape = self.current_piece.shape
                 self.current_piece.rotate("cw")
                 if not self.can_move("neutral"):
                     self.current_piece.shape = old_shape
-                self.draw()
 
             elif key == b'\xe0':  # arrow keys
 
@@ -82,12 +94,10 @@ class Game:
                 if key == b'K':
                     if self.can_move('left'):
                         self.current_piece.col -= 1
-                        self.draw()
 
                 elif key == b'M':
                     if self.can_move('right'):
                         self.current_piece.col += 1
-                        self.draw()
 
                 elif key == b'P':
                     if self.can_move("down"):
@@ -200,7 +210,8 @@ class Game:
 
     def lock_and_spawn(self):
         self.place_piece()
-        self.current_piece = self.spawn_piece()
+        self.current_piece = self.next_piece
+        self.next_piece = self.spawn_piece()
         if not self.can_spawn(self.current_piece):
             self.game_over = True
                 
@@ -242,7 +253,7 @@ if __name__ == "__main__":
 
 """
 TO DO:
-see next spawning piece
+draw() flicker
 shadow
 slow animation for clearing lines ?!
 S and Z pieces are still freaky in rotation
