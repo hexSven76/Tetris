@@ -40,17 +40,26 @@ class Game:
         print("\033[H", end="")
         temp_board = [row[:] for row in self.board]
 
+        # getting ghost piece and marking it on temp_board
+        ghost = self.get_ghost()
+        for row, col in ghost.get_occupied_cells():
+            if 0 <= row < ROWS and 0 <= col < COLS:
+                temp_board[row][col] = -1
+
         # getting occupied cells and marking them on temp_board
         for row, col in self.current_piece.get_occupied_cells():
             temp_board[row][col] = self.current_piece.color
 
         # printing temp_board with occupied cells filled
         RESET = "\033[0m"
+        GHOST = "\033[90m"
         for row in temp_board:
             printing_line = ""
             for cell in row:
                 if cell == 0:
                     printing_line += "  "
+                elif cell == -1:
+                    printing_line += GHOST + "░░" + RESET
                 else:
                     printing_line += COLORS[cell] + "██" + RESET
 
@@ -123,6 +132,10 @@ class Game:
         
 
     def can_move(self, direction):
+        return self.can_move_piece(self.current_piece, direction)
+
+
+    def can_move_piece(self, piece, direction):
     
         def get_offsets(direction):
             if direction == "down":
@@ -134,7 +147,7 @@ class Game:
             if direction == "neutral":
                 return 0, 0
             
-        for row, col in self.current_piece.get_occupied_cells():
+        for row, col in piece.get_occupied_cells():
 
             offset = get_offsets(direction)
             target_row = row + offset[0]
@@ -232,6 +245,17 @@ class Game:
         self.next_piece = self.spawn_piece()
         if not self.can_spawn(self.current_piece):
             self.game_over = True
+            
+
+    def get_ghost(self):
+
+        ghost_piece_data =  {"shape": [row[:] for row in self.current_piece.shape], "color": self.current_piece.color}
+        ghost = Piece(ghost_piece_data, self.current_piece.row, self.current_piece.col)
+ 
+        while self.can_move_piece(ghost, "down"):
+            ghost.row += 1
+
+        return ghost
                 
 
 
@@ -271,8 +295,7 @@ if __name__ == "__main__":
 
 """
 TO DO:
- -----------COMMIT -> fixed next piece showcase bug ---------
-shadow
+fix terminal
 slow animation for clearing lines ?!
 gui?
 exe?
