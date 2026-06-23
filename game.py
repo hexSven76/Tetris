@@ -1,8 +1,8 @@
 """
-⢠⣾⠿⢷⣄⣀⣠⠤⣤⠢⣤⣾⠏⣤⢹⡇
-⣼⣿⢸⣶⡝⣿⣿⣷⡘⣧⣸⣿⣾⣿⢸⡧
+  ⢠⣾⠿⢷⣄⣀⣠⠤⣤⠢⣤⣾⠏⣤⢹⡇
+  ⣼⣿⢸⣶⡝⣿⣿⣷⡘⣧⣸⣿⣾⣿⢸⡧
 ⢀⣽⣿⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦
-⢸⣿⣿⣿⣿⣿⣿⡿⠛⢻⣿⣿⣿⣿⠁⠈⣿⣿⠷⡄  meow
+⢸⣿⣿⣿⣿⣿⣿⡿⠛⢻⣿⣿⣿⣿⠁⠈⣿⣿⠷⡄  mewlma
 ⢸⣿⣟⠻⠿⣿⣿⣧⣀⣠⣿⣿⣿⣿⣶⣾⣿⣥⡾⡇
 ⢸⣿⠿⠿⢶⣾⣿⣿⣿⣿⣿⣿⠟⢻⡿⢻⣿⣿⠶⡇
 ⢸⣿⣶⣶⣶⠾⣿⣿⣿⣦⣍⣥⣾⣷⣶⣿⣿⣿⣷⠆
@@ -37,8 +37,7 @@ class Game:
 
     def draw(self):
 
-        # print("\033[H", end="") # cleart terminal (this fixed flicker, but next_piece preview sometimes shows next 2 pieces)
-        print("\033[H\033[J", end="")
+        print("\033[H", end="")
         temp_board = [row[:] for row in self.board]
 
         # getting occupied cells and marking them on temp_board
@@ -48,9 +47,7 @@ class Game:
         # printing temp_board with occupied cells filled
         RESET = "\033[0m"
         for row in temp_board:
-
             printing_line = ""
-
             for cell in row:
                 if cell == 0:
                     printing_line += "  "
@@ -61,19 +58,27 @@ class Game:
             print("│" + printing_line + "│")
 
         # lower border  
-        print("└" + "─" * (COLS * 2) + "┘ \n")
+        print("└" + "─" * (COLS * 2) + "┘")
 
         # next piece
-        for row in self.next_piece.shape:
+        preview_h = 5
+        preview_w = 5
+        shape = self.next_piece.shape
+        shape_h = len(shape)
+        shape_w = len(shape[0])
+        top_pad = (preview_h - shape_h) // 2
+        left_pad = (preview_w - shape_w) // 2
 
+        print("Next: ")
+        for r in range(preview_h):
             printing_line = ""
-
-            for cell in row:
-                if cell == 0:
-                    printing_line += "  "
-                else:
+            for c in range(preview_w):
+                sr = r - top_pad
+                sc = c - left_pad
+                if 0 <= sr < shape_h and 0 <= sc < shape_w and shape[sr][sc] == 1:
                     printing_line += COLORS[self.next_piece.color] + "██" + RESET
-                    
+                else:
+                    printing_line += "  "
             print(printing_line)
 
         print(f"\nscore: {self.score}")
@@ -184,7 +189,7 @@ class Game:
 
         # selecting a random number of rotations
         random_initial_rotation = random.randint(0,3)
-        for i in range(random_initial_rotation):
+        for _ in range(random_initial_rotation):
             new_piece.rotate('cw')
 
         # removing top paddings (zeros in shape matrice)
@@ -266,10 +271,9 @@ if __name__ == "__main__":
 
 """
 TO DO:
-draw() flicker
+ -----------COMMIT -> fixed next piece showcase bug ---------
 shadow
 slow animation for clearing lines ?!
-S and Z pieces are still freaky in rotation
 gui?
 exe?
 port app?
