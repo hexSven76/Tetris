@@ -42,6 +42,7 @@ class Piece:
 
 # ANSI terminal colors
 COLORS = {
+   -1: "\033[90m",  # light-gray (for ghost piece)
     1: "\033[36m",  # cyan
     2: "\033[33m",  # yellow
     3: "\033[35m",  # pink
@@ -49,6 +50,7 @@ COLORS = {
     5: "\033[31m",  # red
     6: "\033[34m",  # blue
     7: "\033[93m"   # orange
+
 }
 
 

@@ -52,14 +52,13 @@ class Game:
 
         # printing temp_board with occupied cells filled
         RESET = "\033[0m"
-        GHOST = "\033[90m"
         for row in temp_board:
             printing_line = ""
             for cell in row:
                 if cell == 0:
                     printing_line += "  "
                 elif cell == -1:
-                    printing_line += GHOST + "░░" + RESET
+                    printing_line += COLORS[-1] + "░░" + RESET
                 else:
                     printing_line += COLORS[cell] + "██" + RESET
 
@@ -180,18 +179,48 @@ class Game:
 
     def clear_lines(self):
 
-        lines_cleared = 0
-        row = ROWS - 1
-        
-        while row >= 0:
-            if all(cell != 0 for cell in self.board[row]):
-                del self.board[row]
-                self.board.insert(0, [0 for _ in range(COLS)])
-                lines_cleared += 1
-            else:
-                row -= 1
+        lines_cleared = self.get_completed_rows()
+        if lines_cleared:
+            self.animate_clearing_lines(lines_cleared)
+            self.remove_rows(lines_cleared)
+            self.score += len(lines_cleared) * 100
 
-        self.score += lines_cleared * 100
+    
+    def get_completed_rows(self):
+
+        full_rows = []
+        for row in range(ROWS):
+            if all(cell != 0 for cell in self.board[row]):
+                full_rows.append(row)
+
+        return full_rows
+    
+
+    def animate_clearing_lines(self, rows):
+
+        MIDDLE_LEFT = (COLS - 1) // 2
+        MIDDLE_RIGHT = COLS // 2
+
+        for offset in range(COLS // 2 + 1):
+            for row in rows:
+
+                left = MIDDLE_LEFT - offset
+                right = MIDDLE_RIGHT + offset
+
+                if 0 <= left < COLS:
+                    self.board[row][left] = 0
+                if 0 <= right < COLS:
+                    self.board[row][right] = 0
+
+            self.draw()
+            time.sleep(0.08)
+
+
+    def remove_rows(self, rows):
+        for row in sorted(rows, reverse=True):
+            del self.board[row]
+        for _ in rows:
+            self.board.insert(0, [0] * COLS)
 
 
     def spawn_piece(self):
@@ -295,8 +324,8 @@ if __name__ == "__main__":
 
 """
 TO DO:
+try new flashy animation? (last prompt)
 fix terminal
-slow animation for clearing lines ?!
 gui?
 exe?
 port app?
