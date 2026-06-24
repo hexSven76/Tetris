@@ -25,9 +25,11 @@ class Game:
     def __init__(self):
         self.board = [[0 for _ in range(COLS)] for _ in range(ROWS)]
         self.current_piece = self.spawn_piece()
-        self.next_piece = self.spawn_piece()    
-        self.score = 0
+        self.next_piece = self.spawn_piece() 
+        self.hold_piece = None
+        self.can_hold = True   
         self.game_over = False
+        self.score = 0
 
 
     def initialize_screen(self):
@@ -51,46 +53,55 @@ class Game:
             temp_board[row][col] = self.current_piece.color
 
         # printing temp_board with occupied cells filled
-        RESET = "\033[0m"
         for row in temp_board:
             printing_line = ""
             for cell in row:
                 if cell == 0:
                     printing_line += "  "
                 elif cell == -1:
-                    printing_line += COLORS[-1] + "░░" + RESET
+                    printing_line += COLORS[-1] + "░░" + COLORS[0]
                 else:
-                    printing_line += COLORS[cell] + "██" + RESET
+                    printing_line += COLORS[cell] + "██" + COLORS[0]
 
             # side borders
             print("│" + printing_line + "│")
 
         # lower border  
         print("└" + "─" * (COLS * 2) + "┘")
+        print(f"\nscore: {self.score}")
 
         # next piece
+        self.draw_preview(self.next_piece, "Next")
+
+        # hold piece
+        if self.hold_piece is not None:
+            self.draw_preview(self.hold_piece, "Hold")
+
+    
+    def draw_preview(self, piece, title):
+
+        # preview frame
         preview_h = 5
         preview_w = 5
-        shape = self.next_piece.shape
+
+        shape = piece.shape
         shape_h = len(shape)
         shape_w = len(shape[0])
         top_pad = (preview_h - shape_h) // 2
         left_pad = (preview_w - shape_w) // 2
+        print(f"{title}:")
 
-        print("Next: ")
         for r in range(preview_h):
             printing_line = ""
             for c in range(preview_w):
                 sr = r - top_pad
                 sc = c - left_pad
                 if 0 <= sr < shape_h and 0 <= sc < shape_w and shape[sr][sc] == 1:
-                    printing_line += COLORS[self.next_piece.color] + "██" + RESET
+                    printing_line += COLORS[self.next_piece.color] + "██" + COLORS[0]
                 else:
                     printing_line += "  "
             print(printing_line)
 
-        print(f"\nscore: {self.score}")
-    
 
     def get_input(self):
 
@@ -100,6 +111,9 @@ class Game:
 
             if key == b' ':
                 self.hard_drop()
+            
+            if key == b'c':
+                self.hold()
 
             if key == b'z':
                 old_shape = self.current_piece.shape
@@ -272,6 +286,7 @@ class Game:
         self.place_piece()
         self.current_piece = self.next_piece
         self.next_piece = self.spawn_piece()
+        self.can_hold = True
         if not self.can_spawn(self.current_piece):
             self.game_over = True
             
@@ -285,6 +300,26 @@ class Game:
             ghost.row += 1
 
         return ghost
+    
+
+    def hold(self):
+
+        if not self.can_hold:
+            return
+        else:
+            self.can_hold = False
+
+        if self.hold_piece is None:
+            self.hold_piece = self.current_piece
+            self.current_piece = self.next_piece
+            self.next_piece = self.spawn_piece()
+            self.current_piece.reset_position()
+        else:
+            self.current_piece, self.hold_piece = self.hold_piece, self.current_piece
+            self.current_piece.reset_position()
+
+        if not self.can_spawn(self.current_piece):
+            self.game_over = True
                 
 
 
@@ -324,8 +359,8 @@ if __name__ == "__main__":
 
 """
 TO DO:
-try new flashy animation? (last prompt)
-fix terminal
+increasing gravity
+wall kick (rotation collision)
 gui?
 exe?
 port app?

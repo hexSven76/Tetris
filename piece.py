@@ -38,11 +38,17 @@ class Piece:
             if any(cell == 1 for cell in row):
                 return r
         return 0
+    
+
+    def reset_position(self):  # used when swapping to hold piece
+        self.row = -self.get_top_padding()
+        self.col = 4
 
 
 # ANSI terminal colors
 COLORS = {
    -1: "\033[90m",  # light-gray (for ghost piece)
+    0: "\033[0m",   # no color (for reseting)
     1: "\033[36m",  # cyan
     2: "\033[33m",  # yellow
     3: "\033[35m",  # pink
