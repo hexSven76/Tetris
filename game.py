@@ -39,8 +39,7 @@ class Game:
 
     def draw(self):
 
-        # print("\033[H", end="")
-        print("\033[H\033[2J", end="")
+        frame = "\033[H" # concating everything in one string to print it once
         temp_board = [row[:] for row in self.board]
 
         # getting ghost piece and marking it on temp_board
@@ -65,26 +64,30 @@ class Game:
                     printing_line += COLORS[cell] + "██" + COLORS[0]
 
             # side borders
-            print("│" + printing_line + "│")
+            frame += "│" + printing_line + "│\n"
 
         # lower border  
-        print("└" + "─" * (COLS * 2) + "┘")
-        print(f"\nscore: {self.score}")
+        frame += "└" + "─" * (COLS * 2) + "┘\n"
+        frame += f"\nscore: {self.score}\n"
 
         # next & hold piece preview
-        self.draw_preview(self.next_piece, "Next")
-        self.draw_preview(self.hold_piece, "Hold")
+        frame += self.draw_preview(self.next_piece, "Next") + "\n"
+        frame += self.draw_preview(self.hold_piece, "Hold") + "\n"
+
+        import sys
+        sys.stdout.write(frame)
+        sys.stdout.flush()
 
     
     def draw_preview(self, piece, title):
 
-        print(f"{title}:")
+        frame = f"{title}:\n"
 
         # for initial empty Hold preview (keeping fixed size frame to avoid terminal flickers)
         if piece is None:
             for _ in range(5):
-                print("          ")
-            return
+                frame += "          \n"
+            return frame
         
         # preview frame
         preview_h = 5
@@ -105,7 +108,9 @@ class Game:
                     printing_line += COLORS[piece.color] + "██" + COLORS[0]
                 else:
                     printing_line += "  "
-            print(printing_line)
+            frame += printing_line + "\n"
+
+        return frame
 
 
     def get_input(self):
