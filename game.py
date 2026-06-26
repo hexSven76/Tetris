@@ -36,8 +36,7 @@ class Game:
 
 
     def initialize_screen(self):
-        sys.stdout.write("\033[2J") # clear terminal
-        sys.stdout.write("\033[H")
+        sys.stdout.write("\033[?1049h")  # switch to alternate buffer
         sys.stdout.write("\033[?25l") # hide cursor
         sys.stdout.flush()
 
