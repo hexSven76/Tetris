@@ -14,7 +14,10 @@
 import time
 import random
 import msvcrt
+import sys
 from piece import Piece, PIECES_DATA, COLORS
+from colorama import just_fix_windows_console
+just_fix_windows_console()
 
 COLS = 10
 ROWS = 20
@@ -33,13 +36,16 @@ class Game:
 
 
     def initialize_screen(self):
-        print("\033[2J", end="")   # clear terminal
-        print("\033[?25l", end="") # hide cursor
+        sys.stdout.write("\033[2J") # clear terminal
+        sys.stdout.write("\033[H")
+        sys.stdout.write("\033[?25l") # hide cursor
+        sys.stdout.flush()
 
 
     def draw(self):
 
-        frame = "\033[H" # concating everything in one string to print it once
+        # frame = "\033[H\033[J" # concating everything in one string to print it once
+        frame = "\033[H\033[0J"
         temp_board = [row[:] for row in self.board]
 
         # getting ghost piece and marking it on temp_board
@@ -51,6 +57,9 @@ class Game:
         # getting occupied cells and marking them on temp_board
         for row, col in self.current_piece.get_occupied_cells():
             temp_board[row][col] = self.current_piece.color
+
+        # top border
+        frame += "┌" + "─" * (COLS * 2) + "┐\n"
 
         # printing temp_board with occupied cells filled
         for row in temp_board:
@@ -71,10 +80,9 @@ class Game:
         frame += f"\nscore: {self.score}\n"
 
         # next & hold piece preview
-        frame += self.draw_preview(self.next_piece, "Next") + "\n"
-        frame += self.draw_preview(self.hold_piece, "Hold") + "\n"
+        frame += self.draw_preview(self.next_piece, "Next")
+        frame += self.draw_preview(self.hold_piece, "Hold")
 
-        import sys
         sys.stdout.write(frame)
         sys.stdout.flush()
 
@@ -110,7 +118,7 @@ class Game:
                     printing_line += "  "
             frame += printing_line + "\n"
 
-        return frame
+        return frame + "\n"
 
 
     def get_input(self):
