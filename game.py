@@ -39,7 +39,8 @@ class Game:
 
     def draw(self):
 
-        print("\033[H", end="")
+        # print("\033[H", end="")
+        print("\033[H\033[2J", end="")
         temp_board = [row[:] for row in self.board]
 
         # getting ghost piece and marking it on temp_board
@@ -70,16 +71,21 @@ class Game:
         print("└" + "─" * (COLS * 2) + "┘")
         print(f"\nscore: {self.score}")
 
-        # next piece
+        # next & hold piece preview
         self.draw_preview(self.next_piece, "Next")
-
-        # hold piece
-        if self.hold_piece is not None:
-            self.draw_preview(self.hold_piece, "Hold")
+        self.draw_preview(self.hold_piece, "Hold")
 
     
     def draw_preview(self, piece, title):
 
+        print(f"{title}:")
+
+        # for initial empty Hold preview (keeping fixed size frame to avoid terminal flickers)
+        if piece is None:
+            for _ in range(5):
+                print("          ")
+            return
+        
         # preview frame
         preview_h = 5
         preview_w = 5
@@ -89,7 +95,6 @@ class Game:
         shape_w = len(shape[0])
         top_pad = (preview_h - shape_h) // 2
         left_pad = (preview_w - shape_w) // 2
-        print(f"{title}:")
 
         for r in range(preview_h):
             printing_line = ""
@@ -97,7 +102,7 @@ class Game:
                 sr = r - top_pad
                 sc = c - left_pad
                 if 0 <= sr < shape_h and 0 <= sc < shape_w and shape[sr][sc] == 1:
-                    printing_line += COLORS[self.next_piece.color] + "██" + COLORS[0]
+                    printing_line += COLORS[piece.color] + "██" + COLORS[0]
                 else:
                     printing_line += "  "
             print(printing_line)
