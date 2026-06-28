@@ -21,19 +21,24 @@ just_fix_windows_console()
 
 COLS = 10
 ROWS = 20
-FALL_INTERVAL = 0.28
 
 class Game:
     
     def __init__(self):
         self.board = [[0 for _ in range(COLS)] for _ in range(ROWS)]
         self.current_piece = self.spawn_piece()
-        self.next_piece = self.spawn_piece() 
+        self.next_piece = self.spawn_piece()
+        self.score = 0
+        self.total_lines = 0
+        self.level = 1
         self.hold_piece = None
         self.can_hold = True   
         self.game_over = False
-        self.score = 0
 
+
+    def get_fall_interval(self):
+        return max(0.05, 0.5 - (self.level - 1) * 0.03)
+    
 
     def initialize_screen(self):
         sys.stdout.write("\033[?1049h")  # switch to alternate buffer
@@ -43,7 +48,7 @@ class Game:
 
     def draw(self):
 
-        # frame = "\033[H\033[J" # concating everything in one string to print it once
+        # concating everything in one string to print it once
         frame = "\033[H\033[0J"
         temp_board = [row[:] for row in self.board]
 
@@ -76,6 +81,7 @@ class Game:
 
         # lower border  
         frame += "└" + "─" * (COLS * 2) + "┘\n"
+        frame += f"\nlevel: {self.level}"
         frame += f"\nscore: {self.score}\n"
 
         # next & hold piece preview
@@ -203,12 +209,15 @@ class Game:
 
 
     def clear_lines(self):
-
         lines_cleared = self.get_completed_rows()
         if lines_cleared:
             self.animate_clearing_lines(lines_cleared)
             self.remove_rows(lines_cleared)
-            self.score += len(lines_cleared) * 100
+
+            lines = len(lines_cleared)
+            self.score += lines * 100
+            self.total_lines += lines
+            self.level = self.total_lines // 10 + 1
 
     
     def get_completed_rows(self):
@@ -373,7 +382,7 @@ def gameloop():
         # skipping gravity, if fall interval is not completed yet
         # for updating rotation/movement before next
         current_time = time.time()
-        if current_time - last_fall_time >= FALL_INTERVAL:
+        if current_time - last_fall_time >= tetris.get_fall_interval():
             tetris.gravity()
             last_fall_time = current_time
 
@@ -392,7 +401,6 @@ if __name__ == "__main__":
 
 """
 TO DO:
-increasing gravity
 fater action when holding keyboard key
 SRS for rotations
 
