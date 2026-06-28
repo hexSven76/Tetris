@@ -45,6 +45,17 @@ class Piece:
         self.col = 4
 
 
+WALL_KICKS = [
+    (0, 0),
+    (-1, 0),
+    (1, 0),
+    (-2, 0),
+    (2, 0),
+    (-3, 0),
+    (3, 0),
+]
+
+
 # ANSI terminal colors
 COLORS = {
    -1: "\033[90m",  # light-gray (for ghost piece)

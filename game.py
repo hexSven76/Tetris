@@ -15,7 +15,7 @@ import time
 import random
 import msvcrt
 import sys
-from piece import Piece, PIECES_DATA, COLORS
+from piece import Piece, PIECES_DATA, COLORS, WALL_KICKS
 from colorama import just_fix_windows_console
 just_fix_windows_console()
 
@@ -133,16 +133,10 @@ class Game:
                 self.hold()
 
             if key == b'z':
-                old_shape = self.current_piece.shape
-                self.current_piece.rotate("ccw")
-                if not self.can_move("neutral"):
-                    self.current_piece.shape = old_shape
+                self.try_rotate("ccw")
 
             elif key == b'x':
-                old_shape = self.current_piece.shape
-                self.current_piece.rotate("cw")
-                if not self.can_move("neutral"):
-                    self.current_piece.shape = old_shape
+                self.try_rotate("cw")
 
             elif key == b'\xe0':  # arrow keys
 
@@ -337,6 +331,28 @@ class Game:
 
         if not self.can_spawn(self.current_piece):
             self.game_over = True
+    
+
+    def try_rotate(self, direction):
+        original_shape = self.current_piece.shape
+        original_row = self.current_piece.row
+        original_col = self.current_piece.col
+
+        # temporary rotation
+        self.current_piece.rotate(direction)
+
+        # try wall kicking
+        for dx, dy in WALL_KICKS:
+            self.current_piece.row = original_row + dx
+            self.current_piece.col = original_col + dy
+            if self.can_move("neutral"):
+                return True  # success
+
+        # revert if all failed
+        self.current_piece.shape = original_shape
+        self.current_piece.row = original_row
+        self.current_piece.col = original_col
+        return False
                 
 
 
@@ -377,7 +393,12 @@ if __name__ == "__main__":
 """
 TO DO:
 increasing gravity
-wall kick (rotation collision)
+fater action when holding keyboard key
+SRS for rotations
+
+make README
+game version releases in github
+
 gui?
 exe?
 port app?
