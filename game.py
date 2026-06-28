@@ -21,6 +21,8 @@ just_fix_windows_console()
 
 COLS = 10
 ROWS = 20
+START_LEVEL = 8
+LINES_PER_LEVEL = 10
 
 class Game:
     
@@ -30,14 +32,14 @@ class Game:
         self.next_piece = self.spawn_piece()
         self.score = 0
         self.total_lines = 0
-        self.level = 1
+        self.level = START_LEVEL
         self.hold_piece = None
         self.can_hold = True   
         self.game_over = False
 
 
     def get_fall_interval(self):
-        return max(0.05, 0.5 - (self.level - 1) * 0.03)
+        return max(0.03, 0.8 * (0.82 ** (self.level - 1)))
     
 
     def initialize_screen(self):
@@ -213,11 +215,10 @@ class Game:
         if lines_cleared:
             self.animate_clearing_lines(lines_cleared)
             self.remove_rows(lines_cleared)
-
             lines = len(lines_cleared)
             self.score += lines * 100
             self.total_lines += lines
-            self.level = self.total_lines // 10 + 1
+            self.level = START_LEVEL + self.total_lines // LINES_PER_LEVEL
 
     
     def get_completed_rows(self):
