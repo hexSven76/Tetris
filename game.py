@@ -15,7 +15,7 @@ import time
 import random
 from ctypes import windll
 import sys
-from piece import Piece, PIECES_DATA, COLORS, WALL_KICKS
+from piece import Piece, PIECES_DATA, COLORS, JLSTZ_KICKS, I_KICKS
 from colorama import just_fix_windows_console
 just_fix_windows_console()
 
@@ -115,7 +115,7 @@ class Game:
         preview_h = 5
         preview_w = 5
 
-        shape = piece.shape
+        shape = piece.get_shape()
         shape_h = len(shape)
         shape_w = len(shape[0])
         top_pad = (preview_h - shape_h) // 2
@@ -319,8 +319,8 @@ class Game:
     def spawn_piece(self):
 
         # selecting a random piece and creating it
-        piece_data = random.choice(list(PIECES_DATA.values()))
-        new_piece = Piece(piece_data, 0, 4)
+        piece_type = random.choice(list(PIECES_DATA.keys()))
+        new_piece = Piece(piece_type, 0, 4)
 
         # selecting a random number of rotations
         random_initial_rotation = random.randint(0,3)
@@ -372,9 +372,9 @@ class Game:
 
     def get_ghost(self):
 
-        ghost_piece_data =  {"shape": [row[:] for row in self.current_piece.shape], "color": self.current_piece.color}
-        ghost = Piece(ghost_piece_data, self.current_piece.row, self.current_piece.col)
- 
+        ghost = Piece(self.current_piece.type, self.current_piece.row, self.current_piece.col)
+        ghost.rotation = self.current_piece.rotation
+
         while self.can_move_piece(ghost, "down"):
             ghost.row += 1
 
@@ -402,24 +402,40 @@ class Game:
     
 
     def try_rotate(self, direction):
-        original_shape = self.current_piece.shape
-        original_row = self.current_piece.row
-        original_col = self.current_piece.col
 
-        # temporary rotation
-        self.current_piece.rotate(direction)
+        piece = self.current_piece
+        old_rotation = piece.rotation
+        old_row = piece.row
+        old_col = piece.col
 
-        # try wall kicking
-        for dx, dy in WALL_KICKS:
-            self.current_piece.row = original_row + dx
-            self.current_piece.col = original_col + dy
+        # compute new rotation
+        if direction == "cw":
+            new_rotation = (old_rotation + 1) % 4
+        else:
+            new_rotation = (old_rotation - 1) % 4
+
+        # select kick table
+        if piece.type == "I":
+            kicks = I_KICKS.get((old_rotation, new_rotation), [(0,0)])
+        elif piece.type == "O":
+            kicks = [(0,0)]
+        else:
+            kicks = JLSTZ_KICKS.get((old_rotation, new_rotation), [(0,0)])
+
+        # try each kick
+        for dx, dy in kicks:
+
+            piece.rotation = new_rotation
+            piece.row = old_row + dy
+            piece.col = old_col + dx
+
             if self.can_move("neutral"):
-                return True  # success
+                return True
 
-        # revert if all failed
-        self.current_piece.shape = original_shape
-        self.current_piece.row = original_row
-        self.current_piece.col = original_col
+        # revert if failed
+        piece.rotation = old_rotation
+        piece.row = old_row
+        piece.col = old_col
         return False
                 
 
@@ -460,7 +476,8 @@ if __name__ == "__main__":
 
 """
 TO DO:
-SRS for rotations
+
+fix wall kicks on one side
 
 make README
 game version releases in github

@@ -1,17 +1,25 @@
 
 class Piece:
 
-    def __init__(self, piece_data, row, col):
-        self.shape = piece_data["shape"]
-        self.color = piece_data["color"]
+    def __init__(self, piece_type, row, col):
+        self.type = piece_type
+        self.color = PIECES_DATA[piece_type]["color"]
+        self.rotation = 0   # 0=spawn | 1=right | 2=180 | 3=left
         #position on board
         self.row = row
         self.col = col
 
+
+    def get_shape(self):
+        shape = PIECES_DATA[self.type]["shape"]
+        for _ in range(self.rotation):
+            shape = [list(row) for row in zip(*shape[::-1])]
+        return shape
+
     
     def get_occupied_cells(self):
 
-        shape = self.shape  # piece matrix (relative cordinates)
+        shape = self.get_shape()  # piece matrix (relative cordinates)
         cells = []    
 
         # iteration on piece to find occupied cells (1's)
@@ -28,13 +36,13 @@ class Piece:
     
     def rotate(self, direction):
         if direction == "cw":
-            self.shape = [list(row) for row in zip(*self.shape[::-1])]
+            self.rotation = (self.rotation + 1) % 4
         elif direction == "ccw":
-            self.shape = [list(row)for row in zip(*self.shape)][::-1]
+            self.rotation = (self.rotation - 1) % 4
 
 
     def get_top_padding(self):
-        for r, row in enumerate(self.shape):
+        for r, row in enumerate(self.get_shape()):
             if any(cell == 1 for cell in row):
                 return r
         return 0
@@ -45,15 +53,33 @@ class Piece:
         self.col = 4
 
 
-WALL_KICKS = [
-    (0, 0),
-    (-1, 0),
-    (1, 0),
-    (-2, 0),
-    (2, 0),
-    (-3, 0),
-    (3, 0),
-]
+# SRS kick tables
+JLSTZ_KICKS = {
+    (0, 1): [(0,0), (-1,0), (-1,1), (0,-2), (-1,-2)],
+    (1, 0): [(0,0), (1,0), (1,-1), (0,2), (1,2)],
+
+    (1, 2): [(0,0), (1,0), (1,-1), (0,2), (1,2)],
+    (2, 1): [(0,0), (-1,0), (-1,1), (0,-2), (-1,-2)],
+
+    (2, 3): [(0,0), (1,0), (1,1), (0,-2), (1,-2)],
+    (3, 2): [(0,0), (-1,0), (-1,-1), (0,2), (-1,2)],
+
+    (3, 0): [(0,0), (-1,0), (-1,1), (0,-2), (-1,-2)],
+    (0, 3): [(0,0), (1,0), (1,-1), (0,2), (1,2)],
+}
+I_KICKS = {
+    (0, 1): [(0,0), (-2,0), (1,0), (-2,-1), (1,2)],
+    (1, 0): [(0,0), (2,0), (-1,0), (2,1), (-1,-2)],
+
+    (1, 2): [(0,0), (-1,0), (2,0), (-1,2), (2,-1)],
+    (2, 1): [(0,0), (1,0), (-2,0), (1,-2), (-2,1)],
+
+    (2, 3): [(0,0), (2,0), (-1,0), (2,1), (-1,-2)],
+    (3, 2): [(0,0), (-2,0), (1,0), (-2,-1), (1,2)],
+
+    (3, 0): [(0,0), (1,0), (-2,0), (1,-2), (-2,1)],
+    (0, 3): [(0,0), (-1,0), (2,0), (-1,2), (2,-1)],
+}
 
 
 # ANSI terminal colors
