@@ -13,7 +13,7 @@
 
 import time
 import random
-import msvcrt
+from ctypes import windll
 import sys
 from piece import Piece, PIECES_DATA, COLORS, WALL_KICKS
 from colorama import just_fix_windows_console
@@ -23,6 +23,8 @@ COLS = 10
 ROWS = 20
 START_LEVEL = 8
 LINES_PER_LEVEL = 10
+DAS = 0.15   # seconds before auto-repeat starts
+ARR = 0.04   # seconds between repeated moves
 
 class Game:
     
@@ -36,6 +38,11 @@ class Game:
         self.hold_piece = None
         self.can_hold = True   
         self.game_over = False
+        # keyboard input attributes (for holding key)
+        self.prev_keys = {}
+        self.horizontal_direction = 0   # -1 left | +1 right | 0 none
+        self.last_horizontal_time = 0
+        self.horizontal_started = 0
 
 
     def get_fall_interval(self):
@@ -129,38 +136,89 @@ class Game:
 
 
     def get_input(self):
+        
+        LEFT  = 0x25
+        RIGHT = 0x27
+        DOWN  = 0x28
+        SPACE = 0x20
+        Z = ord('Z')
+        X = ord('X')
+        C = ord('C')
 
-        while msvcrt.kbhit():
-            
-            key = msvcrt.getch().lower()
+        current_time = time.time()
 
-            if key == b' ':
-                self.hard_drop()
-            
-            if key == b'c':
-                self.hold()
+        # Horizontal movement 
 
-            if key == b'z':
-                self.try_rotate("ccw")
+        left = self.key_held(LEFT)
+        right = self.key_held(RIGHT)
 
-            elif key == b'x':
-                self.try_rotate("cw")
+        direction = 0
 
-            elif key == b'\xe0':  # arrow keys
+        if left and not right:
+            direction = -1
+        elif right and not left:
+            direction = 1
 
-                key = msvcrt.getch()
+        if direction != self.horizontal_direction:
 
-                if key == b'K':
-                    if self.can_move('left'):
+            self.horizontal_direction = direction
+            self.das_start_time = current_time
+            self.arr_last_move_time = current_time
+
+            # Immediate move
+            if direction == -1 and self.can_move("left"):
+                self.current_piece.col -= 1
+
+            elif direction == 1 and self.can_move("right"):
+                self.current_piece.col += 1
+
+        elif direction != 0:
+
+            if current_time - self.das_start_time >= DAS:
+
+                if current_time - self.arr_last_move_time >= ARR:
+
+                    if direction == -1 and self.can_move("left"):
                         self.current_piece.col -= 1
 
-                elif key == b'M':
-                    if self.can_move('right'):
+                    elif direction == 1 and self.can_move("right"):
                         self.current_piece.col += 1
 
-                elif key == b'P':
-                    if self.can_move("down"):
-                        self.current_piece.row += 1
+                    self.arr_last_move_time = current_time
+
+        else:
+            self.horizontal_direction = 0
+
+        # Soft Drop 
+
+        if self.key_held(DOWN):
+            if self.can_move("down"):
+                self.current_piece.row += 1
+
+        # single-take keys 
+
+        if self.key_pressed(Z):
+            self.try_rotate("ccw")
+
+        if self.key_pressed(X):
+            self.try_rotate("cw")
+
+        if self.key_pressed(C):
+            self.hold()
+
+        if self.key_pressed(SPACE):
+            self.hard_drop()
+    
+
+    def key_held(self, key):
+        return windll.user32.GetAsyncKeyState(key) & 0x8000
+    
+
+    def key_pressed(self, key):
+        down = self.key_held(key)
+        was_down = self.prev_keys.get(key, False)
+        self.prev_keys[key] = down
+        return down and not was_down
         
 
     def can_move(self, direction):
@@ -402,7 +460,6 @@ if __name__ == "__main__":
 
 """
 TO DO:
-fater action when holding keyboard key
 SRS for rotations
 
 make README
