@@ -477,7 +477,7 @@ if __name__ == "__main__":
 """
 TO DO:
 
-fix wall kicks on one side
+use DAS for soft drop too
 
 make README
 game version releases in github
