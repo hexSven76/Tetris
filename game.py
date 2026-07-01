@@ -192,8 +192,20 @@ class Game:
         # Soft Drop 
 
         if self.key_held(DOWN):
-            if self.can_move("down"):
-                self.current_piece.row += 1
+
+            if not self.down_pressed:
+                if self.can_move("down"):
+                    self.current_piece.row += 1
+                self.down_pressed = True
+                self.down_next_repeat = time.time() + DAS
+
+            elif time.time() >= self.down_next_repeat:
+                if self.can_move("down"):
+                    self.current_piece.row += 1
+                self.down_next_repeat += ARR
+
+        else:
+            self.down_pressed = False
 
         # single-take keys 
 
@@ -477,13 +489,17 @@ if __name__ == "__main__":
 """
 TO DO:
 
-use DAS for soft drop too
-
+cross platform
 make README
 game version releases in github
 
+7 bag randomizer
+lockdown delay
+pause
+better terminal (high score, level, time)
+themes
+
 gui?
-exe?
-port app?
+port
 
 """
