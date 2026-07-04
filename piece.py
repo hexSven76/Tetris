@@ -4,6 +4,7 @@ from pieces_data import PIECES_DATA
 class Piece:
 
     def __init__(self, piece_type, row, col):
+        
         self.type = piece_type
         self.color = PIECES_DATA[piece_type]["color"]
         self.rotation = 0   # 0=spawn | 1=right | 2=180 | 3=left

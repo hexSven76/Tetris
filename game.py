@@ -18,6 +18,7 @@ from srs import JLSTZ_KICKS, I_KICKS
 from constants import *
 from renderer import Renderer
 from input import InputHandler
+from board import Board 
 import time
 import random
 from colorama import just_fix_windows_console
@@ -27,7 +28,9 @@ just_fix_windows_console()
 class Game:
     
     def __init__(self):
-        self.board = [[0 for _ in range(COLS)] for _ in range(ROWS)]
+        
+        self.board = Board()
+        self.input = InputHandler()
         self.current_piece = self.spawn_piece()
         self.next_piece = self.spawn_piece()
         self.score = 0
@@ -36,80 +39,22 @@ class Game:
         self.hold_piece = None
         self.can_hold = True   
         self.game_over = False
-        self.input = InputHandler()
 
 
     def get_fall_interval(self):
         return max(0.03, 0.8 * (0.82 ** (self.level - 1)))
-        
-
-    def can_move(self, direction):
-        return self.can_move_piece(self.current_piece, direction)
-
-
-    def can_move_piece(self, piece, direction):
     
-        def get_offsets(direction):
-            if direction == "down":
-                return 1, 0
-            if direction == "right":
-                return 0, 1
-            if direction == "left":
-                return 0, -1
-            if direction == "neutral":
-                return 0, 0
-            
-        for row, col in piece.get_occupied_cells():
-
-            offset = get_offsets(direction)
-            target_row = row + offset[0]
-            target_col = col + offset[1]
-
-            # bottom surface
-            if target_row >= ROWS:
-                return False
-            # right surface
-            if target_col >= COLS:
-                return False
-            # left surface
-            if target_col < 0:
-                return False
-            # existing blocks
-            if self.board[target_row][target_col] != 0:
-                return False
-    
-        return True
-    
-
-    def place_piece(self):
-        # getting occupied cells & permenantly marking it on main board
-        for row, col in self.current_piece.get_occupied_cells():
-            self.board[row][col] = self.current_piece.color
-        
-        # checking for lines to clear
-        self.clear_lines()
-
 
     def clear_lines(self):
-        lines_cleared = self.get_completed_rows()
+        lines_cleared = self.board.get_completed_rows()
         if lines_cleared:
             self.animate_clearing_lines(lines_cleared)
-            self.remove_rows(lines_cleared)
+            self.board.remove_rows(lines_cleared)
             lines = len(lines_cleared)
             self.score += lines * 100
             self.total_lines += lines
             self.level = START_LEVEL + self.total_lines // LINES_PER_LEVEL
 
-    
-    def get_completed_rows(self):
-
-        full_rows = []
-        for row in range(ROWS):
-            if all(cell != 0 for cell in self.board[row]):
-                full_rows.append(row)
-
-        return full_rows
-    
 
     def animate_clearing_lines(self, rows):
 
@@ -123,19 +68,12 @@ class Game:
                 right = MIDDLE_RIGHT + offset
 
                 if 0 <= left < COLS:
-                    self.board[row][left] = 0
+                    self.board.grid[row][left] = 0
                 if 0 <= right < COLS:
-                    self.board[row][right] = 0
+                    self.board.grid[row][right] = 0
 
             Renderer.draw(self)
             time.sleep(0.08)
-
-
-    def remove_rows(self, rows):
-        for row in sorted(rows, reverse=True):
-            del self.board[row]
-        for _ in rows:
-            self.board.insert(0, [0] * COLS)
 
 
     def spawn_piece(self):
@@ -163,7 +101,7 @@ class Game:
             assert 0 <= row < ROWS
             assert 0 <= col < COLS
             # collides with existing block
-            if self.board[row][col] != 0:
+            if self.board.grid[row][col] != 0:
                 return False
 
         return True
@@ -171,20 +109,20 @@ class Game:
 
     def gravity(self):
 
-        if self.can_move("down"):
+        if self.board.can_move(self.current_piece, "down"):
             self.current_piece.row += 1
         else:
             self.lock_and_spawn()
 
 
     def hard_drop(self):
-        while self.can_move("down"):
+        while self.board.can_move(self.current_piece, "down"):
             self.current_piece.row += 1
         self.lock_and_spawn()
 
 
     def lock_and_spawn(self):
-        self.place_piece()
+        self.board.place_piece(self.current_piece)
         self.current_piece = self.next_piece
         self.next_piece = self.spawn_piece()
         self.can_hold = True
@@ -197,7 +135,7 @@ class Game:
         ghost = Piece(self.current_piece.type, self.current_piece.row, self.current_piece.col)
         ghost.rotation = self.current_piece.rotation
 
-        while self.can_move_piece(ghost, "down"):
+        while self.board.can_move(ghost, "down"):
             ghost.row += 1
 
         return ghost
@@ -251,7 +189,7 @@ class Game:
             piece.row = old_row + dy
             piece.col = old_col + dx
 
-            if self.can_move("neutral"):
+            if self.board.can_move(self.current_piece, "neutral"):
                 return True
 
         # revert if failed

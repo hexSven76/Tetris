@@ -16,7 +16,7 @@ class Renderer:
 
         # concating everything in one string to print it once
         frame = "\033[H\033[0J"
-        temp_board = [row[:] for row in game.board]
+        temp_board = [row[:] for row in game.board.grid]
 
         # getting ghost piece and marking it on temp_board
         ghost = game.get_ghost()

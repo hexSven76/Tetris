@@ -7,15 +7,11 @@ class InputHandler:
 
     def __init__(self):
 
-        # self.das_start_time = 0
-        # self.arr_last_move_time = 0
-        # self.down_pressed = False
-        # self.down_next_repeat = 0
-
         self.prev_keys = {}
         self.horizontal_direction = 0   # -1 left | +1 right | 0 none
         self.last_horizontal_time = 0
         self.horizontal_started = 0
+
 
     def update(self, game):
         
@@ -48,10 +44,10 @@ class InputHandler:
             self.arr_last_move_time = current_time
 
             # Immediate move
-            if direction == -1 and game.can_move("left"):
+            if direction == -1 and game.board.can_move(game.current_piece, "left"):
                 game.current_piece.col -= 1
 
-            elif direction == 1 and game.can_move("right"):
+            elif direction == 1 and game.board.can_move(game.current_piece, "right"):
                 game.current_piece.col += 1
 
         elif direction != 0:
@@ -60,10 +56,10 @@ class InputHandler:
 
                 if current_time - self.arr_last_move_time >= ARR:
 
-                    if direction == -1 and game.can_move("left"):
+                    if direction == -1 and game.board.can_move(game.current_piece, "left"):
                         game.current_piece.col -= 1
 
-                    elif direction == 1 and game.can_move("right"):
+                    elif direction == 1 and game.board.can_move(game.current_piece, "right"):
                         game.current_piece.col += 1
 
                     self.arr_last_move_time = current_time
@@ -76,13 +72,13 @@ class InputHandler:
         if self.key_held(DOWN):
 
             if not self.down_pressed:
-                if game.can_move("down"):
+                if game.board.can_move(game.current_piece, "down"):
                     game.current_piece.row += 1
                 self.down_pressed = True
                 self.down_next_repeat = time.time() + DAS
 
             elif time.time() >= self.down_next_repeat:
-                if game.can_move("down"):
+                if game.board.can_move(game.current_piece, "down"):
                     game.current_piece.row += 1
                 self.down_next_repeat += ARR
 
