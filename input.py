@@ -1,0 +1,116 @@
+
+from constants import ARR, DAS
+import time
+from ctypes import windll
+
+class InputHandler:
+
+    def __init__(self):
+
+        # self.das_start_time = 0
+        # self.arr_last_move_time = 0
+        # self.down_pressed = False
+        # self.down_next_repeat = 0
+
+        self.prev_keys = {}
+        self.horizontal_direction = 0   # -1 left | +1 right | 0 none
+        self.last_horizontal_time = 0
+        self.horizontal_started = 0
+
+    def update(self, game):
+        
+        LEFT  = 0x25
+        RIGHT = 0x27
+        DOWN  = 0x28
+        SPACE = 0x20
+        Z = ord('Z')
+        X = ord('X')
+        C = ord('C')
+
+        current_time = time.time()
+
+        # Horizontal movement 
+
+        left = self.key_held(LEFT)
+        right = self.key_held(RIGHT)
+
+        direction = 0
+
+        if left and not right:
+            direction = -1
+        elif right and not left:
+            direction = 1
+
+        if direction != self.horizontal_direction:
+
+            self.horizontal_direction = direction
+            self.das_start_time = current_time
+            self.arr_last_move_time = current_time
+
+            # Immediate move
+            if direction == -1 and game.can_move("left"):
+                game.current_piece.col -= 1
+
+            elif direction == 1 and game.can_move("right"):
+                game.current_piece.col += 1
+
+        elif direction != 0:
+
+            if current_time - self.das_start_time >= DAS:
+
+                if current_time - self.arr_last_move_time >= ARR:
+
+                    if direction == -1 and game.can_move("left"):
+                        game.current_piece.col -= 1
+
+                    elif direction == 1 and game.can_move("right"):
+                        game.current_piece.col += 1
+
+                    self.arr_last_move_time = current_time
+
+        else:
+            self.horizontal_direction = 0
+
+        # Soft Drop 
+
+        if self.key_held(DOWN):
+
+            if not self.down_pressed:
+                if game.can_move("down"):
+                    game.current_piece.row += 1
+                self.down_pressed = True
+                self.down_next_repeat = time.time() + DAS
+
+            elif time.time() >= self.down_next_repeat:
+                if game.can_move("down"):
+                    game.current_piece.row += 1
+                self.down_next_repeat += ARR
+
+        else:
+            self.down_pressed = False
+
+        # single-take keys 
+
+        if self.key_pressed(Z):
+            game.try_rotate("ccw")
+
+        if self.key_pressed(X):
+            game.try_rotate("cw")
+
+        if self.key_pressed(C):
+            game.hold()
+
+        if self.key_pressed(SPACE):
+            game.hard_drop()
+    
+
+    def key_held(self, key):
+        return windll.user32.GetAsyncKeyState(key) & 0x8000
+    
+
+    def key_pressed(self, key):
+        down = self.key_held(key)
+        was_down = self.prev_keys.get(key, False)
+        self.prev_keys[key] = down
+        return down and not was_down
+    
