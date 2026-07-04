@@ -11,20 +11,18 @@
 ⠈⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉
 """
 
+
+from piece import Piece
+from pieces_data import PIECES_DATA
+from srs import JLSTZ_KICKS, I_KICKS
+from constants import *
 import time
 import random
 from ctypes import windll
 import sys
-from piece import Piece, PIECES_DATA, COLORS, JLSTZ_KICKS, I_KICKS
 from colorama import just_fix_windows_console
 just_fix_windows_console()
 
-COLS = 10
-ROWS = 20
-START_LEVEL = 8
-LINES_PER_LEVEL = 10
-DAS = 0.15   # seconds before auto-repeat starts
-ARR = 0.04   # seconds between repeated moves
 
 class Game:
     
@@ -493,7 +491,7 @@ cross platform
 make README
 game version releases in github
 
-7 bag randomizer
+7 bag randomizer (is it really?)
 lockdown delay
 pause
 better terminal (high score, level, time)
