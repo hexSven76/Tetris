@@ -16,10 +16,10 @@ from piece import Piece
 from pieces_data import PIECES_DATA
 from srs import JLSTZ_KICKS, I_KICKS
 from constants import *
+from renderer import Renderer
 import time
 import random
 from ctypes import windll
-import sys
 from colorama import just_fix_windows_console
 just_fix_windows_console()
 
@@ -45,92 +45,6 @@ class Game:
 
     def get_fall_interval(self):
         return max(0.03, 0.8 * (0.82 ** (self.level - 1)))
-    
-
-    def initialize_screen(self):
-        sys.stdout.write("\033[?1049h")  # switch to alternate buffer
-        sys.stdout.write("\033[?25l") # hide cursor
-        sys.stdout.flush()
-
-
-    def draw(self):
-
-        # concating everything in one string to print it once
-        frame = "\033[H\033[0J"
-        temp_board = [row[:] for row in self.board]
-
-        # getting ghost piece and marking it on temp_board
-        ghost = self.get_ghost()
-        for row, col in ghost.get_occupied_cells():
-            if 0 <= row < ROWS and 0 <= col < COLS:
-                temp_board[row][col] = -1
-
-        # getting occupied cells and marking them on temp_board
-        for row, col in self.current_piece.get_occupied_cells():
-            temp_board[row][col] = self.current_piece.color
-
-        # top border
-        frame += "┌" + "─" * (COLS * 2) + "┐\n"
-
-        # printing temp_board with occupied cells filled
-        for row in temp_board:
-            printing_line = ""
-            for cell in row:
-                if cell == 0:
-                    printing_line += "  "
-                elif cell == -1:
-                    printing_line += COLORS[-1] + "░░" + COLORS[0]
-                else:
-                    printing_line += COLORS[cell] + "██" + COLORS[0]
-
-            # side borders
-            frame += "│" + printing_line + "│\n"
-
-        # lower border  
-        frame += "└" + "─" * (COLS * 2) + "┘\n"
-        frame += f"\nlevel: {self.level}"
-        frame += f"\nscore: {self.score}\n"
-
-        # next & hold piece preview
-        frame += self.draw_preview(self.next_piece, "Next")
-        frame += self.draw_preview(self.hold_piece, "Hold")
-
-        sys.stdout.write(frame)
-        sys.stdout.flush()
-
-    
-    def draw_preview(self, piece, title):
-
-        frame = f"{title}:\n"
-
-        # for initial empty Hold preview (keeping fixed size frame to avoid terminal flickers)
-        if piece is None:
-            for _ in range(5):
-                frame += "          \n"
-            return frame
-        
-        # preview frame
-        preview_h = 5
-        preview_w = 5
-
-        shape = piece.get_shape()
-        shape_h = len(shape)
-        shape_w = len(shape[0])
-        top_pad = (preview_h - shape_h) // 2
-        left_pad = (preview_w - shape_w) // 2
-
-        for r in range(preview_h):
-            printing_line = ""
-            for c in range(preview_w):
-                sr = r - top_pad
-                sc = c - left_pad
-                if 0 <= sr < shape_h and 0 <= sc < shape_w and shape[sr][sc] == 1:
-                    printing_line += COLORS[piece.color] + "██" + COLORS[0]
-                else:
-                    printing_line += "  "
-            frame += printing_line + "\n"
-
-        return frame + "\n"
 
 
     def get_input(self):
@@ -315,7 +229,7 @@ class Game:
                 if 0 <= right < COLS:
                     self.board[row][right] = 0
 
-            self.draw()
+            Renderer.draw(self)
             time.sleep(0.08)
 
 
@@ -453,13 +367,13 @@ class Game:
 def gameloop():
 
     tetris = Game()
-    tetris.initialize_screen()
+    Renderer.initialize_screen()
     last_fall_time = time.time()  
 
     while not tetris.game_over:
 
         # drawing current state
-        tetris.draw()
+        Renderer.draw(tetris)
 
         # keyboard input
         tetris.get_input()
@@ -474,7 +388,7 @@ def gameloop():
         time.sleep(0.01)
 
     # show final spawning collision and GAMEOVER
-    tetris.draw()
+    Renderer.draw(tetris)
     print("GAME OVER!")
 
 
@@ -487,9 +401,10 @@ if __name__ == "__main__":
 """
 TO DO:
 
-cross platform
-make README
+refactor
+make README + req.txt
 game version releases in github
+cross platform
 
 7 bag randomizer (is it really?)
 lockdown delay
