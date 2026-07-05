@@ -18,7 +18,7 @@ from srs import JLSTZ_KICKS, I_KICKS
 from constants import *
 from renderer import Renderer
 from input import InputHandler
-from board import Board 
+from board import Board, Direction
 import time
 import random
 from colorama import just_fix_windows_console
@@ -28,7 +28,7 @@ just_fix_windows_console()
 class Game:
     
     def __init__(self):
-        
+
         self.board = Board()
         self.input = InputHandler()
         self.current_piece = self.spawn_piece()
@@ -109,14 +109,14 @@ class Game:
 
     def gravity(self):
 
-        if self.board.can_move(self.current_piece, "down"):
+        if self.board.can_move(self.current_piece, Direction.DOWN):
             self.current_piece.row += 1
         else:
             self.lock_and_spawn()
 
 
     def hard_drop(self):
-        while self.board.can_move(self.current_piece, "down"):
+        while self.board.can_move(self.current_piece, Direction.DOWN):
             self.current_piece.row += 1
         self.lock_and_spawn()
 
@@ -135,7 +135,7 @@ class Game:
         ghost = Piece(self.current_piece.type, self.current_piece.row, self.current_piece.col)
         ghost.rotation = self.current_piece.rotation
 
-        while self.board.can_move(ghost, "down"):
+        while self.board.can_move(ghost, Direction.DOWN):
             ghost.row += 1
 
         return ghost
@@ -189,7 +189,7 @@ class Game:
             piece.row = old_row + dy
             piece.col = old_col + dx
 
-            if self.board.can_move(self.current_piece, "neutral"):
+            if self.board.can_move(self.current_piece, Direction.NEUTRAL):
                 return True
 
         # revert if failed
@@ -237,7 +237,7 @@ if __name__ == "__main__":
 """
 TO DO:
 
-refactor
+refactor ( -> no5 )
 make README + req.txt
 game version releases in github
 cross platform

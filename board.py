@@ -1,5 +1,14 @@
 
 from constants import *
+from enum import Enum
+
+
+class Direction(Enum):
+    LEFT = (0,-1)
+    RIGHT = (0,1)
+    DOWN = (1,0)
+    NEUTRAL = (0,0)
+
 
 class Board:
     
@@ -7,21 +16,12 @@ class Board:
         self.grid = [[0 for _ in range(COLS)] for _ in range(ROWS)]
 
 
-    def can_move(self, piece, direction):
-    
-        def get_offsets(direction):
-            if direction == "down":
-                return 1, 0
-            if direction == "right":
-                return 0, 1
-            if direction == "left":
-                return 0, -1
-            if direction == "neutral":
-                return 0, 0
+    def can_move(self, piece, direction: Direction):
+
+        dx, dy = direction.value
             
         for row, col in piece.get_occupied_cells():
-
-            dx, dy = get_offsets(direction)
+            
             target_row = row + dx
             target_col = col + dy
 

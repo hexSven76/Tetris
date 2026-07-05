@@ -1,5 +1,6 @@
 
 from constants import ARR, DAS
+from board import Direction
 import time
 from ctypes import windll
 
@@ -44,10 +45,10 @@ class InputHandler:
             self.arr_last_move_time = current_time
 
             # Immediate move
-            if direction == -1 and game.board.can_move(game.current_piece, "left"):
+            if direction == -1 and game.board.can_move(game.current_piece, Direction.LEFT):
                 game.current_piece.col -= 1
 
-            elif direction == 1 and game.board.can_move(game.current_piece, "right"):
+            elif direction == 1 and game.board.can_move(game.current_piece, Direction.RIGHT):
                 game.current_piece.col += 1
 
         elif direction != 0:
@@ -56,10 +57,10 @@ class InputHandler:
 
                 if current_time - self.arr_last_move_time >= ARR:
 
-                    if direction == -1 and game.board.can_move(game.current_piece, "left"):
+                    if direction == -1 and game.board.can_move(game.current_piece, Direction.LEFT):
                         game.current_piece.col -= 1
 
-                    elif direction == 1 and game.board.can_move(game.current_piece, "right"):
+                    elif direction == 1 and game.board.can_move(game.current_piece, Direction.RIGHT):
                         game.current_piece.col += 1
 
                     self.arr_last_move_time = current_time
@@ -72,13 +73,13 @@ class InputHandler:
         if self.key_held(DOWN):
 
             if not self.down_pressed:
-                if game.board.can_move(game.current_piece, "down"):
+                if game.board.can_move(game.current_piece, Direction.DOWN):
                     game.current_piece.row += 1
                 self.down_pressed = True
                 self.down_next_repeat = time.time() + DAS
 
             elif time.time() >= self.down_next_repeat:
-                if game.board.can_move(game.current_piece, "down"):
+                if game.board.can_move(game.current_piece, Direction.DOWN):
                     game.current_piece.row += 1
                 self.down_next_repeat += ARR
 
