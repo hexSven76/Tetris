@@ -1,16 +1,3 @@
-"""
-  ⢠⣾⠿⢷⣄⣀⣠⠤⣤⠢⣤⣾⠏⣤⢹⡇
-  ⣼⣿⢸⣶⡝⣿⣿⣷⡘⣧⣸⣿⣾⣿⢸⡧
-⢀⣽⣿⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦
-⢸⣿⣿⣿⣿⣿⣿⡿⠛⢻⣿⣿⣿⣿⠁⠈⣿⣿⠷⡄  mewlma
-⢸⣿⣟⠻⠿⣿⣿⣧⣀⣠⣿⣿⣿⣿⣶⣾⣿⣥⡾⡇
-⢸⣿⠿⠿⢶⣾⣿⣿⣿⣿⣿⣿⠟⢻⡿⢻⣿⣿⠶⡇
-⢸⣿⣶⣶⣶⠾⣿⣿⣿⣦⣍⣥⣾⣷⣶⣿⣿⣿⣷⠆
-⢸⣿⣿⣋⣥⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣏
-⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠈⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉
-"""
-
 
 from piece import Piece
 from pieces_data import PIECES_DATA
@@ -80,7 +67,7 @@ class Game:
 
         # selecting a random piece and creating it
         piece_type = random.choice(list(PIECES_DATA.keys()))
-        new_piece = Piece(piece_type, 0, 4)
+        new_piece = Piece(piece_type, SPAWN_ROW, SPAWN_COL)
 
         # selecting a random number of rotations
         random_initial_rotation = random.randint(0,3)
@@ -200,44 +187,9 @@ class Game:
                 
 
 
-def gameloop():
-
-    tetris = Game()
-    Renderer.initialize_screen()
-    last_fall_time = time.time()  
-
-    while not tetris.game_over:
-
-        # drawing current state
-        Renderer.draw(tetris)
-
-        # keyboard input
-        tetris.input.update(tetris)
-
-        # skipping gravity, if fall interval is not completed yet
-        # for updating rotation/movement before next
-        current_time = time.time()
-        if current_time - last_fall_time >= tetris.get_fall_interval():
-            tetris.gravity()
-            last_fall_time = current_time
-
-        time.sleep(0.01)
-
-    # show final spawning collision and GAMEOVER
-    Renderer.draw(tetris)
-    print("GAME OVER!")
-
-
-if __name__ == "__main__":
-    gameloop()
-
-
-
-
 """
 TO DO:
 
-refactor
 make README + req.txt
 game version releases in github
 cross platform

@@ -8,6 +8,10 @@ LINES_PER_LEVEL = 10
 DAS = 0.15   # seconds before auto-repeat starts
 ARR = 0.04   # seconds between repeated moves
 
+SPAWN_COL = 4
+SPAWN_ROW = 0
+PREVIEW_BOX_SIZE = 5
+
 # ANSI terminal colors
 COLORS = {
    -1: "\033[90m",  # light-gray (for ghost piece)
