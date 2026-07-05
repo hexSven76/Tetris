@@ -51,15 +51,15 @@ class Renderer:
         frame += f"\nscore: {game.score}\n"
 
         # next & hold piece preview
-        frame += Renderer.draw_preview(game.next_piece, "Next")
-        frame += Renderer.draw_preview(game.hold_piece, "Hold")
+        frame += Renderer.piece_preview(game.next_piece, "Next")
+        frame += Renderer.piece_preview(game.hold_piece, "Hold")
 
         sys.stdout.write(frame)
         sys.stdout.flush()
 
 
     @staticmethod
-    def draw_preview(piece, title):
+    def piece_preview(piece, title):
 
         frame = f"{title}:\n"
 

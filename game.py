@@ -237,12 +237,12 @@ if __name__ == "__main__":
 """
 TO DO:
 
-refactor ( -> no5 )
+refactor
 make README + req.txt
 game version releases in github
 cross platform
 
-7 bag randomizer (is it really?)
+7 bag randomizer
 lockdown delay
 pause
 better terminal (high score, level, time)

@@ -14,10 +14,7 @@ class Piece:
 
 
     def get_shape(self):
-        shape = PIECES_DATA[self.type]["shape"]
-        for _ in range(self.rotation):
-            shape = [list(row) for row in zip(*shape[::-1])]
-        return shape
+        return PIECES_DATA[self.type]["shapes"][self.rotation]
 
     
     def get_occupied_cells(self):
