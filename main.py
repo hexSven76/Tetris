@@ -25,14 +25,14 @@ def gameloop():
 
     while not tetris.game_over:
 
-        # drawing current state
+        # rendering current state
         Renderer.draw(tetris)
 
         # keyboard input
         tetris.input.update(tetris)
 
         # skipping gravity, if fall interval is not completed yet
-        # for updating rotation/movement before next
+        # (for updating rotation/movement before next gravity proc)
         current_time = time.time()
         if current_time - last_fall_time >= tetris.get_fall_interval():
             tetris.gravity()

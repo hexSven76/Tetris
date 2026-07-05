@@ -190,7 +190,7 @@ class Game:
 """
 TO DO:
 
-make README + req.txt
+make README
 game version releases in github
 cross platform
 
