@@ -110,6 +110,7 @@ class Game:
 
     def lock_and_spawn(self):
         self.board.place_piece(self.current_piece)
+        self.clear_lines()  # checking for lines to clear
         self.current_piece = self.next_piece
         self.next_piece = self.spawn_piece()
         self.can_hold = True
@@ -190,10 +191,9 @@ class Game:
 """
 TO DO:
 
-make README
-game version releases in github
 cross platform
 
+audio?
 7 bag randomizer
 lockdown delay
 pause

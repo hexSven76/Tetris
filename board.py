@@ -45,9 +45,6 @@ class Board:
         # getting occupied cells & permenantly marking it on main board
         for row, col in piece.get_occupied_cells():
             self.grid[row][col] = piece.color
-        
-        # checking for lines to clear
-        # self.clear_lines()
 
 
     def get_completed_rows(self):
