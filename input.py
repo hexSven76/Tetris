@@ -2,34 +2,30 @@
 from constants import ARR, DAS
 from board import Direction
 import time
-from ctypes import windll
+from keys import Key
+from keyboard import Keyboard
 
 class InputHandler:
 
     def __init__(self):
 
+        self.keyboard = Keyboard()
         self.prev_keys = {}
         self.horizontal_direction = 0   # -1 left | +1 right | 0 none
         self.last_horizontal_time = 0
         self.horizontal_started = 0
+        self.down_pressed = False
+        self.down_next_repeat = 0
 
 
     def update(self, game):
         
-        LEFT  = 0x25
-        RIGHT = 0x27
-        DOWN  = 0x28
-        SPACE = 0x20
-        Z = ord('Z')
-        X = ord('X')
-        C = ord('C')
-
         current_time = time.time()
 
         # Horizontal movement 
 
-        left = self.key_held(LEFT)
-        right = self.key_held(RIGHT)
+        left = self.key_held(Key.LEFT)
+        right = self.key_held(Key.RIGHT)
 
         direction = 0
 
@@ -70,7 +66,7 @@ class InputHandler:
 
         # Soft Drop 
 
-        if self.key_held(DOWN):
+        if self.key_held(Key.DOWN):
 
             if not self.down_pressed:
                 if game.board.can_move(game.current_piece, Direction.DOWN):
@@ -88,21 +84,21 @@ class InputHandler:
 
         # single-take keys 
 
-        if self.key_pressed(Z):
+        if self.key_pressed(Key.Z):
             game.try_rotate("ccw")
 
-        if self.key_pressed(X):
+        if self.key_pressed(Key.X):
             game.try_rotate("cw")
 
-        if self.key_pressed(C):
+        if self.key_pressed(Key.C):
             game.hold()
 
-        if self.key_pressed(SPACE):
+        if self.key_pressed(Key.SPACE):
             game.hard_drop()
     
 
     def key_held(self, key):
-        return windll.user32.GetAsyncKeyState(key) & 0x8000
+        return self.keyboard.key_held(key)
     
 
     def key_pressed(self, key):
@@ -110,4 +106,3 @@ class InputHandler:
         was_down = self.prev_keys.get(key, False)
         self.prev_keys[key] = down
         return down and not was_down
-    
