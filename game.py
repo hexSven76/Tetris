@@ -18,6 +18,7 @@ class Game:
 
         self.board = Board()
         self.input = InputHandler()
+        self.bag = []
         self.current_piece = self.spawn_piece()
         self.next_piece = self.spawn_piece()
         self.score = 0
@@ -65,8 +66,11 @@ class Game:
 
     def spawn_piece(self):
 
-        # selecting a random piece and creating it
-        piece_type = random.choice(list(PIECES_DATA.keys()))
+        # poping a piece out of bag (if empty bag, refills it first)
+        if not self.bag:
+            self.refill_bag()
+        piece_type = self.bag.pop()
+
         new_piece = Piece(piece_type, SPAWN_ROW, SPAWN_COL)
 
         # selecting a random number of rotations
@@ -185,22 +189,25 @@ class Game:
         piece.row = old_row
         piece.col = old_col
         return False
+    
+
+    def refill_bag(self):
+        self.bag = list(PIECES_DATA.keys())
+        random.shuffle(self.bag)
                 
 
 
 """
 TO DO:
 
-cross platform
-
-audio?
 7 bag randomizer
 lockdown delay
 pause
 better terminal (high score, level, time)
 themes
+audio?
 
-gui?
-port
+websocket
+port?
 
 """
