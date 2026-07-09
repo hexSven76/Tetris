@@ -23,6 +23,8 @@ class Game:
         self.next_piece = self.spawn_piece()
         self.score = 0
         self.total_lines = 0
+        self.lock_timer = None
+        self.lock_resets = 0
         self.level = START_LEVEL
         self.hold_piece = None
         self.can_hold = True   
@@ -34,6 +36,7 @@ class Game:
     
 
     def clear_lines(self):
+        
         lines_cleared = self.board.get_completed_rows()
         if lines_cleared:
             self.animate_clearing_lines(lines_cleared)
@@ -102,20 +105,26 @@ class Game:
 
         if self.board.can_move(self.current_piece, Direction.DOWN):
             self.current_piece.row += 1
+            self.lock_timer = None
         else:
-            self.lock_and_spawn()
+            if self.lock_timer is None:
+                self.lock_timer = time.time()
 
 
     def hard_drop(self):
+
         while self.board.can_move(self.current_piece, Direction.DOWN):
             self.current_piece.row += 1
         self.lock_and_spawn()
 
 
     def lock_and_spawn(self):
+
         self.board.place_piece(self.current_piece)
         self.clear_lines()  # checking for lines to clear
         self.current_piece = self.next_piece
+        self.lock_timer = None
+        self.lock_resets = 0
         self.next_piece = self.spawn_piece()
         self.can_hold = True
         if not self.can_spawn(self.current_piece):
@@ -182,6 +191,7 @@ class Game:
             piece.col = old_col + dx
 
             if self.board.can_move(self.current_piece, Direction.NEUTRAL):
+                self.reset_lock_delay()
                 return True
 
         # revert if failed
@@ -192,16 +202,22 @@ class Game:
     
 
     def refill_bag(self):
+
         self.bag = list(PIECES_DATA.keys())
         random.shuffle(self.bag)
                 
+    
+    def reset_lock_delay(self):
+
+        if self.lock_timer is not None:
+            if self.lock_resets < MAX_LOCK_RESETS:
+                self.lock_timer = time.time()
+                self.lock_resets += 1
 
 
 """
 TO DO:
 
-7 bag randomizer
-lockdown delay
 pause
 better terminal (high score, level, time)
 themes

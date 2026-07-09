@@ -15,6 +15,7 @@
 
 from game import Game
 from renderer import Renderer
+from constants import LOCK_DELAY
 import time
 
 def gameloop():
@@ -37,6 +38,10 @@ def gameloop():
         if current_time - last_fall_time >= tetris.get_fall_interval():
             tetris.gravity()
             last_fall_time = current_time
+
+        if tetris.lock_timer:
+            if current_time - tetris.lock_timer >= LOCK_DELAY:
+                tetris.lock_and_spawn()
 
         time.sleep(0.01)
 
