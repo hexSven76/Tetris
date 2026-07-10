@@ -25,6 +25,11 @@ class InputHandler:
         C = ord('C')
         P = ord('P')
 
+        if self.key_pressed(P):
+            game.toggle_pause()
+        if game.paused:
+            return
+
         current_time = time.time()
 
         # Horizontal movement 
@@ -100,9 +105,6 @@ class InputHandler:
 
         if self.key_pressed(SPACE):
             game.hard_drop()
-
-        if self.key_pressed(P):
-            game.toggle_pause()
     
 
     def key_held(self, key):

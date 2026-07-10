@@ -28,45 +28,85 @@ class Renderer:
         for row, col in game.current_piece.get_occupied_cells():
             temp_board[row][col] = game.current_piece.color
 
-        # top border
-        frame += "┌" + "─" * (COLS * 2) + "┐\n"
+        # getting board ad side seperately and printing together (to show stats next to board)
+        board_lines = Renderer.draw_board(temp_board)
+        side_lines = Renderer.draw_sidebar(game)
 
-        # printing temp_board with occupied cells filled
-        for row in temp_board:
-            printing_line = ""
-            for cell in row:
-                if cell == 0:
-                    printing_line += "  "
-                elif cell == -1:
-                    printing_line += COLORS[-1] + "░░" + COLORS[0]
-                else:
-                    printing_line += COLORS[cell] + "██" + COLORS[0]
+        for i in range(max(len(board_lines), len(side_lines))):
+            left = board_lines[i] if i < len(board_lines) else ""
+            right = side_lines[i] if i < len(side_lines) else ""
 
-            # side borders
-            frame += "│" + printing_line + "│\n"
-
-        # lower border  
-        frame += "└" + "─" * (COLS * 2) + "┘\n"
-        frame += f"\nlevel: {game.level}"
-        frame += f"\nscore: {game.score}\n"
-
-        # pause message
-        if game.paused:
-            frame += "\n\n      PAUSED\n"
-            frame += "Press P to resume\n"
-
-        # next & hold piece preview
-        frame += Renderer.piece_preview(game.next_piece, "Next")
-        frame += Renderer.piece_preview(game.hold_piece, "Hold")
+            frame += left + "     " + right + "\n"
 
         sys.stdout.write(frame)
         sys.stdout.flush()
 
 
     @staticmethod
+    def draw_board(temp_board):
+
+        printing_line = []
+
+        # top border
+        printing_line.append("┌" + "─" * (COLS * 2) + "┐")
+
+        # printing temp_board with occupied cells filled
+        for row in temp_board:
+            lines = ""
+            for cell in row:
+                if cell == 0:
+                    lines += "  "
+                elif cell == -1:
+                    lines += COLORS[-1] + "░░" + COLORS[0]
+                else:
+                    lines += COLORS[cell] + "██" + COLORS[0]
+
+            # side borders
+            printing_line.append("│" + lines + "│")
+        
+        # lower border  
+        printing_line.append("└" + "─" * (COLS * 2) + "┘")
+        return printing_line
+    
+
+    @staticmethod
+    def draw_sidebar(game):
+
+        printing_line = []
+        printing_line.append(f"Lines:        {game.total_lines}")
+        printing_line.append(f"Level:        {game.level}")
+        printing_line.append(f"Score:        {game.score}")
+        printing_line.append(f"High Score:   {game.high_score}")
+
+        seconds = game.get_elapsed_time()
+        minutes = seconds // 60
+        seconds = seconds % 60
+        printing_line.append(f"Time:         {minutes:02}:{seconds:02}")
+
+        printing_line.append("")
+
+        printing_line.append("Next:")
+        next_preview = Renderer.piece_preview(game.next_piece, "")
+        printing_line.extend(next_preview.rstrip("\n").split("\n"))
+
+        printing_line.append("")
+
+        printing_line.append("Hold:")
+        hold_preview = Renderer.piece_preview(game.hold_piece, "")
+        printing_line.extend(hold_preview.rstrip("\n").split("\n"))
+
+        if game.paused:
+            printing_line.append("")
+            printing_line.append("  PAUSED")
+            printing_line.append(" Press P")
+
+        return printing_line
+
+
+    @staticmethod
     def piece_preview(piece, title):
 
-        frame = f"{title}:\n"
+        frame = ""
 
         # for initial empty Hold preview (keeping fixed size frame to avoid terminal flickers)
         if piece is None:

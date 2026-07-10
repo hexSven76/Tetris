@@ -27,7 +27,8 @@ def gameloop():
     while not tetris.game_over:
 
         # rendering current state
-        Renderer.draw(tetris)
+        if not tetris.paused:
+            Renderer.draw(tetris)
 
         # keyboard input
         tetris.input.update(tetris)
@@ -53,8 +54,10 @@ def gameloop():
 
     # show final spawning collision and GAMEOVER
     Renderer.draw(tetris)
+    tetris.save_score()
     print("GAME OVER!")
 
 
 if __name__ == "__main__":
     gameloop()
+    

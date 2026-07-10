@@ -6,6 +6,7 @@ from constants import *
 from renderer import Renderer
 from input import InputHandler
 from board import Board, Direction
+from highscore import load_high_score, save_high_score
 import time
 import random
 from colorama import just_fix_windows_console
@@ -22,13 +23,17 @@ class Game:
         self.current_piece = self.spawn_piece()
         self.next_piece = self.spawn_piece()
         self.score = 0
+        self.high_score = load_high_score()
         self.total_lines = 0
         self.lock_timer = None
         self.lock_resets = 0
         self.level = START_LEVEL
         self.hold_piece = None
         self.can_hold = True
-        self.paused = False 
+        self.paused = False
+        self.paused_time = 0
+        self.pause_started = None
+        self.start_time = time.time()
         self.game_over = False
 
 
@@ -39,11 +44,17 @@ class Game:
     def clear_lines(self):
         
         lines_cleared = self.board.get_completed_rows()
+
         if lines_cleared:
+
             self.animate_clearing_lines(lines_cleared)
             self.board.remove_rows(lines_cleared)
             lines = len(lines_cleared)
+
             self.score += lines * 100
+            if self.score > self.high_score:
+                self.high_score = self.score
+
             self.total_lines += lines
             self.level = START_LEVEL + self.total_lines // LINES_PER_LEVEL
 
@@ -217,17 +228,35 @@ class Game:
 
 
     def toggle_pause(self):
+
         self.paused = not self.paused
+
+        if self.paused:
+            # remember when pause started
+            self.pause_time = time.time()
+        else:
+            # add this pause duration to total paused time
+            self.paused_time += time.time() - self.pause_time
+            self.pause_time = None
+
+
+    def get_elapsed_time(self):
+        return int(time.time() - self.start_time - self.paused_time)
+    
+
+    def save_score(self):
+        save_high_score(self.high_score)    
+
 
 
 """
 TO DO:
 
-better terminal (high score, level, time)
 themes
 audio?
 
 websocket
 port?
+better scoring
 
 """
