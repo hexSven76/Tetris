@@ -3,7 +3,7 @@
 A modern terminal-based **Tetris** clone written in **Python**, featuring **Super Rotation System (SRS)**, **Hold Piece**, **Ghost Piece**, configurable **DAS/ARR**, smooth ANSI terminal rendering, and a modular object-oriented architecture. This version only works in Windows.
 
 <p align="center">
-  <img width="642" height="1016" alt="vc_0002147-1" src="https://github.com/user-attachments/assets/a7df8050-a64b-445d-bcb5-aefd74ae703f" />
+  <img width="1186" height="1032" alt="vc_0002147" src="https://github.com/user-attachments/assets/15215420-4c6d-4683-af84-3acb2a9b1bc9" />
 </p>
 
 
