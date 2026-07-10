@@ -50,6 +50,11 @@ class Renderer:
         frame += f"\nlevel: {game.level}"
         frame += f"\nscore: {game.score}\n"
 
+        # pause message
+        if game.paused:
+            frame += "\n\n      PAUSED\n"
+            frame += "Press P to resume\n"
+
         # next & hold piece preview
         frame += Renderer.piece_preview(game.next_piece, "Next")
         frame += Renderer.piece_preview(game.hold_piece, "Hold")

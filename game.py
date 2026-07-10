@@ -27,7 +27,8 @@ class Game:
         self.lock_resets = 0
         self.level = START_LEVEL
         self.hold_piece = None
-        self.can_hold = True   
+        self.can_hold = True
+        self.paused = False 
         self.game_over = False
 
 
@@ -215,10 +216,13 @@ class Game:
                 self.lock_resets += 1
 
 
+    def toggle_pause(self):
+        self.paused = not self.paused
+
+
 """
 TO DO:
 
-pause
 better terminal (high score, level, time)
 themes
 audio?

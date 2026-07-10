@@ -34,6 +34,7 @@ A modern terminal-based **Tetris** clone written in **Python**, featuring **Supe
 | Z     | Rotate Counter-Clockwise |
 | X     | Rotate Clockwise         |
 | C     | Hold Piece               |
+| P     | Pause Game               |
 
 ---
 

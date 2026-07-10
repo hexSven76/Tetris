@@ -32,16 +32,22 @@ def gameloop():
         # keyboard input
         tetris.input.update(tetris)
 
-        # skipping gravity, if fall interval is not completed yet
-        # (for updating rotation/movement before next gravity proc)
-        current_time = time.time()
-        if current_time - last_fall_time >= tetris.get_fall_interval():
-            tetris.gravity()
-            last_fall_time = current_time
+        # continue if game isn't paused
+        if not tetris.paused:
+            
+            # skipping gravity, if fall interval is not completed yet
+            # (for updating rotation/movement before next gravity proc)
+            current_time = time.time()
+            if current_time - last_fall_time >= tetris.get_fall_interval():
+                tetris.gravity()
+                last_fall_time = current_time
 
-        if tetris.lock_timer:
-            if current_time - tetris.lock_timer >= LOCK_DELAY:
-                tetris.lock_and_spawn()
+            if tetris.lock_timer:
+                if current_time - tetris.lock_timer >= LOCK_DELAY:
+                    tetris.lock_and_spawn()
+         
+        else:
+            last_fall_time = time.time()
 
         time.sleep(0.01)
 

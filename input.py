@@ -23,6 +23,7 @@ class InputHandler:
         Z = ord('Z')
         X = ord('X')
         C = ord('C')
+        P = ord('P')
 
         current_time = time.time()
 
@@ -99,6 +100,9 @@ class InputHandler:
 
         if self.key_pressed(SPACE):
             game.hard_drop()
+
+        if self.key_pressed(P):
+            game.toggle_pause()
     
 
     def key_held(self, key):
