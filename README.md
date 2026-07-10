@@ -1,8 +1,11 @@
 # Tetris
 
-A modern terminal-based **Tetris** clone written in **Python**, featuring **Super Rotation System (SRS)**, **Hold Piece**, **Ghost Piece**, configurable **DAS/ARR**, smooth ANSI terminal rendering, and a modular object-oriented architecture.
+A modern terminal-based **Tetris** clone written in **Python**, featuring **Super Rotation System (SRS)**, **Hold Piece**, **Ghost Piece**, configurable **DAS/ARR**, smooth ANSI terminal rendering, and a modular object-oriented architecture. This version only works in Windows.
 
-<img width="1280" height="720" alt="vc_0002147-1" src="https://github.com/user-attachments/assets/bd7a21f9-8dea-4169-93ca-af201031c889" />
+<p align="center">
+  <img width="642" height="1016" alt="vc_0002147-1" src="https://github.com/user-attachments/assets/a7df8050-a64b-445d-bcb5-aefd74ae703f" />
+</p>
+
 
 ---
 
@@ -89,8 +92,7 @@ Highlights include:
 ├── srs.py             # SRS tables
 ├── renderer.py        # Terminal rendering
 ├── input.py           # Keyboard input handling
-├── constants.py       # Shared constants
-└── requirements.txt
+└── constants.py       # Shared constants
 ```
 
 ---
