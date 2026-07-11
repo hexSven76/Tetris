@@ -252,7 +252,6 @@ class Game:
 """
 TO DO:
 
-themes
 audio?
 
 websocket

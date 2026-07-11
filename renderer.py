@@ -1,5 +1,6 @@
 
-from constants import ROWS, COLS, COLORS
+from constants import ROWS, COLS
+from themes import colors
 import sys
 
 class Renderer:
@@ -57,9 +58,9 @@ class Renderer:
                 if cell == 0:
                     lines += "  "
                 elif cell == -1:
-                    lines += COLORS[-1] + "░░" + COLORS[0]
+                    lines += colors()[-1] + "░░" + colors()[0]
                 else:
-                    lines += COLORS[cell] + "██" + COLORS[0]
+                    lines += colors()[cell] + "██" + colors()[0]
 
             # side borders
             printing_line.append("│" + lines + "│")
@@ -130,7 +131,7 @@ class Renderer:
                 sr = r - top_pad
                 sc = c - left_pad
                 if 0 <= sr < shape_h and 0 <= sc < shape_w and shape[sr][sc] == 1:
-                    printing_line += COLORS[piece.color] + "██" + COLORS[0]
+                    printing_line += colors()[piece.color] + "██" + colors()[0]
                 else:
                     printing_line += "  "
             frame += printing_line + "\n"
