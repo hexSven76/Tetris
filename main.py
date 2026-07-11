@@ -52,10 +52,8 @@ def gameloop():
 
         time.sleep(0.01)
 
-    # show final spawning collision and GAMEOVER
-    Renderer.draw(tetris)
-    tetris.save_score()
-    print("GAME OVER!")
+    # finishing the game
+    tetris.end_game()
 
 
 if __name__ == "__main__":

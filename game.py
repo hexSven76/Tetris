@@ -245,7 +245,19 @@ class Game:
     
 
     def save_score(self):
-        save_high_score(self.high_score)    
+        save_high_score(self.high_score)
+
+
+    def end_game(self):
+
+        # show final spawning collision and update HS if needed
+        Renderer.draw(self)
+        self.save_score()
+
+        print("\nGAME OVER!")
+        print("Press Enter to exit...")
+        input()
+        Renderer.restore_screen()
 
 
 

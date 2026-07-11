@@ -8,7 +8,14 @@ class Renderer:
     @staticmethod
     def initialize_screen():
         sys.stdout.write("\033[?1049h")  # switch to alternate buffer
-        sys.stdout.write("\033[?25l") # hide cursor
+        sys.stdout.write("\033[?25l")    # hide cursor
+        sys.stdout.flush()
+
+
+    @staticmethod
+    def restore_screen():
+        sys.stdout.write("\033[?25h")    # show cursor
+        sys.stdout.write("\033[?1049l")  # leave alternate screen
         sys.stdout.flush()
 
 
