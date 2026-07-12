@@ -1,6 +1,7 @@
 
 from constants import *
 from enum import Enum
+from audio import Audio
 
 
 class Direction(Enum):
@@ -45,6 +46,7 @@ class Board:
         # getting occupied cells & permenantly marking it on main board
         for row, col in piece.get_occupied_cells():
             self.grid[row][col] = piece.color
+        # Audio.play("lock")
 
 
     def get_completed_rows(self):

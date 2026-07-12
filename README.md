@@ -20,6 +20,7 @@ A modern terminal-based **Tetris** clone written in **Python**, featuring **Supe
 * Progressive gravity and level system
 * Animated line clearing
 * ANSI-colored terminal rendering
+* Sound Effects
 
 ---
 
@@ -92,6 +93,9 @@ Highlights include:
 ├── pieces_data.py    
 ├── srs.py             # SRS tables
 ├── renderer.py        # Terminal rendering
+├── audio.py           # Audio initialization and methods
+├── highscore.py       # Highscore load and store
+├── themes.py          # Color themes
 ├── input.py           # Keyboard input handling
 └── constants.py       # Shared constants
 ```

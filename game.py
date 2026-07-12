@@ -7,6 +7,7 @@ from renderer import Renderer
 from input import InputHandler
 from board import Board, Direction
 from highscore import load_high_score, save_high_score
+from audio import Audio
 import time
 import random
 from colorama import just_fix_windows_console
@@ -47,6 +48,7 @@ class Game:
 
         if lines_cleared:
 
+            Audio.play("line_clear")
             self.animate_clearing_lines(lines_cleared)
             self.board.remove_rows(lines_cleared)
             lines = len(lines_cleared)
@@ -204,6 +206,7 @@ class Game:
 
             if self.board.can_move(self.current_piece, Direction.NEUTRAL):
                 self.reset_lock_delay()
+                # Audio.play("rotate")
                 return True
 
         # revert if failed
@@ -255,16 +258,17 @@ class Game:
         self.save_score()
 
         print("\nGAME OVER!")
+        Audio.play("gameover")
+        
         print("Press Enter to exit...")
         input()
-        Renderer.restore_screen()
 
+        Renderer.restore_screen()
+        Audio.shutdown()
 
 
 """
 TO DO:
-
-audio?
 
 websocket
 port?

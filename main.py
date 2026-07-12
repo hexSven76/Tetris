@@ -16,7 +16,11 @@
 from game import Game
 from renderer import Renderer
 from constants import LOCK_DELAY
+from audio import Audio
 import time
+
+Audio.initialize()
+Audio.load()
 
 def gameloop():
 
