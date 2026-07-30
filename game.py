@@ -1,10 +1,7 @@
-
 from piece import Piece
 from pieces_data import PIECES_DATA
 from srs import JLSTZ_KICKS, I_KICKS
 from constants import *
-from renderer import Renderer
-from input import InputHandler
 from board import Board, Direction
 from highscore import load_high_score, save_high_score
 from audio import Audio
@@ -15,11 +12,12 @@ just_fix_windows_console()
 
 
 class Game:
-    
-    def __init__(self):
 
+    def __init__(self, on_frame=None, start_level=None):
+
+        self.on_frame = on_frame
+        self.start_level = start_level if start_level is not None else START_LEVEL
         self.board = Board()
-        self.input = InputHandler()
         self.bag = []
         self.current_piece = self.spawn_piece()
         self.next_piece = self.spawn_piece()
@@ -28,7 +26,7 @@ class Game:
         self.total_lines = 0
         self.lock_timer = None
         self.lock_resets = 0
-        self.level = START_LEVEL
+        self.level = self.start_level
         self.hold_piece = None
         self.can_hold = True
         self.paused = False
@@ -48,17 +46,21 @@ class Game:
 
         if lines_cleared:
 
-            Audio.play("line_clear")
             self.animate_clearing_lines(lines_cleared)
             self.board.remove_rows(lines_cleared)
             lines = len(lines_cleared)
+
+            if lines == 4:
+                Audio.play("4_lines")
+            else:
+                Audio.play("1_line")
 
             self.score += lines * 100
             if self.score > self.high_score:
                 self.high_score = self.score
 
             self.total_lines += lines
-            self.level = START_LEVEL + self.total_lines // LINES_PER_LEVEL
+            self.level = self.start_level + self.total_lines // LINES_PER_LEVEL
 
 
     def animate_clearing_lines(self, rows):
@@ -77,7 +79,8 @@ class Game:
                 if 0 <= right < COLS:
                     self.board.grid[row][right] = 0
 
-            Renderer.draw(self)
+            if self.on_frame:
+                self.on_frame(self)
             time.sleep(0.08)
 
 
@@ -244,34 +247,19 @@ class Game:
 
 
     def get_elapsed_time(self):
-        return int(time.time() - self.start_time - self.paused_time)
+        paused_time = self.paused_time
+        if self.paused:
+            paused_time += time.time() - self.pause_time
+        return int(time.time() - self.start_time - paused_time)
     
 
     def save_score(self):
         save_high_score(self.high_score)
 
 
-    def end_game(self):
-
-        # show final spawning collision and update HS if needed
-        Renderer.draw(self)
-        self.save_score()
-
-        print("\nGAME OVER!")
-        Audio.play("gameover")
-        
-        print("Press Enter to exit...")
-        input()
-
-        Renderer.restore_screen()
-        Audio.shutdown()
-
-
 """
 TO DO:
 
-websocket
-port?
 better scoring
 
 """

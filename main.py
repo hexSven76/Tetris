@@ -1,4 +1,3 @@
-
 """
   ⢠⣾⠿⢷⣄⣀⣠⠤⣤⠢⣤⣾⠏⣤⢹⡇
   ⣼⣿⢸⣶⡝⣿⣿⣷⡘⣧⣸⣿⣾⣿⢸⡧
@@ -15,6 +14,7 @@
 
 from game import Game
 from renderer import Renderer
+from input import InputHandler
 from constants import LOCK_DELAY
 from audio import Audio
 import time
@@ -24,7 +24,8 @@ Audio.load()
 
 def gameloop():
 
-    tetris = Game()
+    tetris = Game(on_frame=Renderer.draw)
+    input_handler = InputHandler()
     Renderer.initialize_screen()
     last_fall_time = time.time()  
 
@@ -35,7 +36,7 @@ def gameloop():
             Renderer.draw(tetris)
 
         # keyboard input
-        tetris.input.update(tetris)
+        input_handler.update(tetris)
 
         # continue if game isn't paused
         if not tetris.paused:
@@ -56,10 +57,20 @@ def gameloop():
 
         time.sleep(0.01)
 
-    # finishing the game
-    tetris.end_game()
+    end_game(tetris)
+
+
+def end_game(game):
+        # show final spawning collision and update HS if needed
+        Renderer.draw(game)
+        game.save_score()
+        print("\nGAME OVER!")
+        Audio.play("gameover")
+        print("Press Enter to exit...")
+        input()
+        Renderer.restore_screen()
+        Audio.shutdown()
 
 
 if __name__ == "__main__":
     gameloop()
-    

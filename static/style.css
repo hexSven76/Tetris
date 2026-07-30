@@ -1,0 +1,233 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #0d0d12;
+  font-family: "Segoe UI", Consolas, monospace;
+  color: #e8e8f0;
+}
+
+#game-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#layout {
+  display: flex;
+  gap: 24px;
+}
+
+canvas#board {
+  background: #17171f;
+  border: 2px solid #3a3a4a;
+  image-rendering: pixelated;
+}
+
+#sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 150px;
+}
+
+.panel {
+  background: #17171f;
+  border: 2px solid #3a3a4a;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.panel canvas {
+  display: block;
+  width: 100%;
+  background: #0d0d12;
+  border-radius: 4px;
+}
+
+.label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #8888a0;
+  margin-bottom: 6px;
+}
+
+.stats div {
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+.controls div {
+  font-size: 12px;
+  color: #a0a0b8;
+  margin: 3px 0;
+}
+
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 15, 0.82);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: #fff;
+}
+
+#overlay.hidden {
+  display: none;
+}
+
+#overlay-text {
+  font-size: 28px;
+  letter-spacing: 2px;
+}
+
+#overlay-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+#overlay-buttons button {
+  font-family: inherit;
+  font-size: 16px;
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: 2px solid #5a5a70;
+  background: #23232f;
+  color: #fff;
+  cursor: pointer;
+}
+
+#overlay-buttons button:hover {
+  background: #2f2f3d;
+}
+
+#overlay-buttons button:focus {
+  outline: 3px solid #7ad0ff;
+  outline-offset: 2px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#menu-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 20px;
+}
+
+#menu-screen h1 {
+  font-size: 42px;
+  letter-spacing: 6px;
+  margin: 0;
+  color: #fff;
+}
+
+.menu-highscore {
+  color: #a0a0b8;
+  font-size: 14px;
+}
+
+.menu-section {
+  width: 320px;
+  background: #17171f;
+  border: 2px solid #3a3a4a;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.level-picker {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
+}
+
+.level-picker button {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 0;
+  border-radius: 4px;
+  border: 2px solid #3a3a4a;
+  background: #23232f;
+  color: #e8e8f0;
+  cursor: pointer;
+}
+
+.level-picker button:hover {
+  background: #2f2f3d;
+}
+
+.level-picker button.selected {
+  border-color: #7ad0ff;
+  background: #234;
+  color: #fff;
+}
+
+.theme-picker {
+  display: grid;
+  grid-template-columns: repeat(4, max-content);
+  justify-content: center;
+  gap: 8px;
+}
+
+.theme-swatch {
+  cursor: pointer;
+  border: 2px solid #3a3a4a;
+  border-radius: 6px;
+  padding: 6px;
+  text-align: center;
+  background: #23232f;
+}
+
+.theme-swatch:hover {
+  background: #2f2f3d;
+}
+
+.theme-swatch.selected {
+  border-color: #7ad0ff;
+}
+
+.theme-swatch .swatch-row {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 6px;
+  justify-content: center;
+}
+
+.theme-swatch .swatch-row span {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.theme-swatch .swatch-name {
+  font-size: 11px;
+  text-transform: capitalize;
+  color: #c0c0d0;
+}
+
+#start-button {
+  font-family: inherit;
+  font-size: 18px;
+  padding: 12px 36px;
+  border-radius: 8px;
+  border: 2px solid #5a5a70;
+  background: #2a6fdb;
+  color: #fff;
+  cursor: pointer;
+}
+
+#start-button:hover {
+  background: #337bef;
+}
