@@ -2,7 +2,12 @@
 from constants import SFX_VOLUME
 import os
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
-import pygame
+
+try:
+    import pygame
+except ImportError:
+    # pygame isn't required for frontends that don't need server-side sound
+    pygame = None
 
 class Audio:
 
@@ -12,7 +17,7 @@ class Audio:
     @staticmethod
     def initialize():
 
-        if not Audio.enabled:
+        if not Audio.enabled or pygame is None:
             return
         pygame.mixer.init()
 
@@ -20,14 +25,14 @@ class Audio:
     @staticmethod
     def shutdown():
 
-        if Audio.enabled:
+        if Audio.enabled and pygame is not None:
             pygame.mixer.quit()
 
 
     @staticmethod
     def load():
         
-        if not Audio.enabled:
+        if not Audio.enabled or pygame is None:
             return
         
         sound_folder = os.path.join("assets", "sounds")
@@ -43,7 +48,7 @@ class Audio:
     @staticmethod
     def play(name):
 
-        if not Audio.enabled:
+        if not Audio.enabled or pygame is None:
             return
         if name in Audio.sounds:
             Audio.sounds[name].play()

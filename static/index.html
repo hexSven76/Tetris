@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tetris</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="menu-screen">
+    <h1>TETRIS</h1>
+    <div class="menu-highscore">High Score: <span id="menu-high-score">0</span></div>
+
+    <div class="menu-section">
+      <div class="label">Starting Level</div>
+      <div id="level-picker" class="level-picker"></div>
+    </div>
+
+    <div class="menu-section">
+      <div class="label">Theme</div>
+      <div id="theme-picker" class="theme-picker"></div>
+    </div>
+
+    <button id="start-button">Start Game</button>
+  </div>
+
+  <div id="game-screen" class="hidden">
+    <div id="layout">
+      <canvas id="board" width="300" height="600"></canvas>
+
+      <div id="sidebar">
+        <div class="panel">
+          <div class="label">Next</div>
+          <canvas id="next" width="120" height="120"></canvas>
+        </div>
+        <div class="panel">
+          <div class="label">Hold</div>
+          <canvas id="hold" width="120" height="120"></canvas>
+        </div>
+        <div class="panel stats">
+          <div>Score: <span id="score">0</span></div>
+          <div>High Score: <span id="high-score">0</span></div>
+          <div>Level: <span id="level">1</span></div>
+          <div>Lines: <span id="lines">0</span></div>
+          <div>Time: <span id="time">00:00</span></div>
+        </div>
+        <div class="panel controls">
+          <div>&larr; &rarr; Move</div>
+          <div>&darr; Soft Drop</div>
+          <div>Space Hard Drop</div>
+          <div>Z / X Rotate</div>
+          <div>C Hold</div>
+          <div>P Pause</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="overlay" class="hidden">
+      <div id="overlay-text"></div>
+      <div id="overlay-buttons">
+        <button id="resume-button" class="hidden">Resume (P)</button>
+        <button id="menu-button" class="hidden">Back to Menu</button>
+        <button id="continue-button" class="hidden">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
