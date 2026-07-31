@@ -7,8 +7,8 @@ const PREVIEW_CELL = 24;
 
 const EMPTY_COLOR = "#17171f";
 
-// Populated from /api/themes on load
-let THEMES = {};
+let THEMES = {}; // Populated from /api/themes on load
+let SOUNDS = {}; // Populated from /api/sounds on load
 let currentTheme = localStorage.getItem("tetris_theme") || "classic";
 let currentLevel = parseInt(localStorage.getItem("tetris_level"), 10);
 if (!Number.isInteger(currentLevel) || currentLevel < 1 || currentLevel > 9) currentLevel = 1;
@@ -62,6 +62,29 @@ async function loadThemes() {
   buildThemePicker();
 }
 
+async function loadSounds() {
+  try {
+    const res = await fetch("/api/sounds");
+    if (!res.ok) {
+      console.error("GET /api/sounds failed:", res.status, await res.text());
+      return;
+    }
+    const map = await res.json();
+    console.log("Loaded sound map from /api/sounds:", map);
+    if (Object.keys(map).length === 0) {
+      console.warn("assets/sounds appears empty (or the folder wasn't found) - all sounds will fall back to the beep.");
+    }
+    for (const [name, url] of Object.entries(map)) {
+      SOUNDS[name] = new Audio(url);
+      SOUNDS[name].addEventListener("error", () => {
+        console.error(`Failed to load sound file: ${url}`);
+      });
+    }
+  } catch (e) {
+    console.error("loadSounds() failed:", e);
+  }
+}
+
 // ---------- Menu setup ----------
 
 function buildLevelPicker() {
@@ -110,6 +133,7 @@ function buildThemePicker() {
 
 buildLevelPicker();
 loadThemes();
+loadSounds();
 
 startButton.addEventListener("click", () => {
   sendMessage({ type: "start", level: currentLevel });
@@ -178,7 +202,8 @@ function formatTime(totalSeconds) {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-function playLineClearSound() {
+function playBeepFallback(reason) {
+  console.warn(`playBeepFallback() firing - ${reason}`);
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
@@ -191,6 +216,30 @@ function playLineClearSound() {
     osc.stop(ctx.currentTime + 0.2);
   } catch (e) {
     // ignore - audio not essential
+  }
+  return null;
+}
+
+// Plays a sound by name so callers that need to stop a sound later
+// (like gameover) can hold onto the right instance
+function playSound(name) {
+  const audio = SOUNDS[name];
+  if (!audio) {
+    return playBeepFallback(`no sound loaded for "${name}" (check /api/sounds output and your filenames)`);
+  }
+  // cloneNode lets overlapping plays (like rapid line clears)
+  const instance = audio.cloneNode();
+  instance.play().catch((err) => console.warn(`Playback blocked for "${name}":`, err));
+  return instance;
+}
+
+let gameOverAudio = null;
+
+function stopGameOverSound() {
+  if (gameOverAudio) {
+    gameOverAudio.pause();
+    gameOverAudio.currentTime = 0;
+    gameOverAudio = null;
   }
 }
 
@@ -223,13 +272,21 @@ function render(state) {
   timeEl.textContent = formatTime(state.time);
 
   if (state.lines > lastLines) {
-    playLineClearSound();
+    const clearedThisEvent = state.lines - lastLines;
+    playSound(clearedThisEvent >= 4 ? "4_lines" : "1_line");
   }
   lastLines = state.lines;
 
   const wasPaused = isPaused;
+  const wasGameOver = isGameOver;
   isGameOver = state.game_over;
   isPaused = state.paused;
+
+  if (isGameOver && !wasGameOver) {
+    gameOverAudio = playSound("gameover");
+  } else if (!isGameOver && wasGameOver) {
+    stopGameOverSound();
+  }
 
   if (isGameOver) {
     overlayText.textContent = "GAME OVER";
@@ -253,6 +310,7 @@ function render(state) {
 }
 
 function backToMenu() {
+  stopGameOverSound();
   sendMessage({ type: "menu" });
 }
 

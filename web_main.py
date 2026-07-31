@@ -15,6 +15,7 @@ from flask_sock import Sock
 import threading
 import time
 import json
+import os
 
 from constants import LOCK_DELAY
 from game import Game
@@ -28,6 +29,8 @@ Audio.enabled = False
 
 app = Flask(__name__, static_folder="static", static_url_path="")
 sock = Sock(app)
+
+ASSETS_SOUNDS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "sounds")
 
 state_lock = threading.Lock()
 state_condition = threading.Condition()
@@ -179,6 +182,27 @@ def index():
 @app.route("/api/themes")
 def api_themes():
     return jsonify(serialize_themes())
+
+
+@app.route("/api/sounds")
+def api_sounds():
+    # Lists SFXs in assets/sounds (can play - .wav, .mp3, .ogg, ...)
+    # Keyed by filename without extension
+    sounds = {}
+    if os.path.isdir(ASSETS_SOUNDS_DIR):
+        for name in sorted(os.listdir(ASSETS_SOUNDS_DIR)):
+            if name.startswith("."):
+                continue
+            full_path = os.path.join(ASSETS_SOUNDS_DIR, name)
+            if os.path.isfile(full_path) and "." in name:
+                key = name.rsplit(".", 1)[0]
+                sounds[key] = f"/assets/sounds/{name}"
+    return jsonify(sounds)
+
+
+@app.route("/assets/sounds/<path:filename>")
+def assets_sound(filename):
+    return send_from_directory(ASSETS_SOUNDS_DIR, filename)
 
 
 @sock.route("/ws")
